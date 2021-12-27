@@ -14,7 +14,7 @@ public:
 	double mass;
 	//float* shape;
 	Kinetic kinetics;
-	Orbit orbit;
+	//Orbit orbit;
 	unsigned long time =
 		std::chrono::duration_cast<std::chrono::milliseconds>
 		(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -24,7 +24,7 @@ public:
 	Object(double m, double pos[3], double vel[3]) {
 		int i;
 		mass = m;
-		kinetics.p = (double *)malloc(sizeof(double) * 3);
+		/*kinetics.p = (double*)malloc(sizeof(double) * 3);
 		kinetics.v = (double *)malloc(sizeof(double) * 3);
 		kinetics.a = (double *)malloc(sizeof(double) * 3);
 		if (kinetics.p == NULL || kinetics.v == NULL || kinetics.a == NULL) {
@@ -37,11 +37,11 @@ public:
 			kinetics.v[i] = vel[i];
 		for (i = 0; i < 3; i++)
 			kinetics.a[i] = -mu * pos[i] / pow(sqrt(pow(pos[0], 2) + pow(pos[1], 2) + pow(pos[2], 2)), 3);
-		init();
+		init();*/
 	}
 
 	double* getPosition() {
-		return kinetics.p;
+		//return kinetics.p;
 	}
 
 

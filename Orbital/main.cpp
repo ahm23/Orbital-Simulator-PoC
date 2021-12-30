@@ -13,6 +13,7 @@
 #include "Shader.h"
 #include <vector>
 #include <fstream>
+#include "Renderer.h"
 
 using namespace std;
 
@@ -80,29 +81,18 @@ int main() {
         layout.push<float>(2);
         va.AddBuffer(vb, layout);
 
-        IndexBuffer buffer_i(indicies, 6);
+        IndexBuffer ib(indicies, 6);
 
         Shader shader("gui/shaders/vertex.shader", "gui/shaders/fragment.shader");
         shader.bind();
         shader.SetUniform4f("u_Color", 249.0 / 255.0, 215.0 / 255.0, 28.0 / 255.0, 1.0);
 
-        va.unbind();
-        shader.unbind();
-        vb.unbind();
-        buffer_i.unbind();
+        Renderer renderer;
 
         while (!glfwWindowShouldClose(window)) {
-            /* Render here */
-            glClear(GL_COLOR_BUFFER_BIT);
-            shader.bind();
-
-            va.bind();
-            glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
-
-            /* Swap front and back buffers */
+            renderer.Clear();
+            renderer.Draw(va, ib, shader);
             glfwSwapBuffers(window);
-
-            /* Poll for and process events */
             glfwPollEvents();
         }
     }

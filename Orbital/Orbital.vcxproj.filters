@@ -33,9 +33,6 @@
     <ClCompile Include="Kinetics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Renderer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="IndexBuffer.cpp">
       <Filter>Source Files\gui</Filter>
     </ClCompile>
@@ -50,6 +47,9 @@
     </ClCompile>
     <ClCompile Include="Shader.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Source Files\gui</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -68,9 +68,6 @@
     <ClInclude Include="utils_math.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Renderer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="IndexBuffer.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
@@ -84,6 +81,9 @@
       <Filter>Header Files\gui</Filter>
     </ClInclude>
     <ClInclude Include="Shader.h">
+      <Filter>Header Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
       <Filter>Header Files\gui</Filter>
     </ClInclude>
   </ItemGroup>

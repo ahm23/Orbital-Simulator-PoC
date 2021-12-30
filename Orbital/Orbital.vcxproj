@@ -19,7 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BufferLayout.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
+    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="VertexArray.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="Kinetics.cpp" />
     <ClCompile Include="main.cpp" />
@@ -28,7 +31,10 @@
     <ClCompile Include="Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BufferLayout.h" />
     <ClInclude Include="IndexBuffer.h" />
+    <ClInclude Include="Shader.h" />
+    <ClInclude Include="VertexArray.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="Kinetics.h" />
     <ClInclude Include="Object.h" />

@@ -9,67 +9,16 @@
 #include "Planet.h"
 #include "VertexBuffer.h";
 #include "IndexBuffer.h"
+#include "VertexArray.h"
+#include "Shader.h"
 #include <vector>
 #include <fstream>
 
 using namespace std;
 
-
-static string loadShader(const string filepath) {
-    std::ifstream stream(filepath);
-    string line;
-    stringstream s;
-    while (getline(stream, line)) {
-        s << line << '\n';
-    }
-
-    return s.str();
-}
-
-static unsigned int CompileShader(unsigned int type, const string& source) {
-    unsigned int id = glCreateShader(type);
-    const char* src = source.c_str();
-    glShaderSource(id, 1, &src, nullptr);
-    glCompileShader(id);
-
-    int result;
-    glGetShaderiv(id, GL_COMPILE_STATUS, &result);
-    if (!result) {
-        int len;
-        glGetShaderiv(id, GL_COMPILE_STATUS, &len);
-        char* message = (char*)malloc(len*sizeof(char));
-        glGetShaderInfoLog(id, len, &len, message);
-        std::cout << message << endl;
-        glDeleteShader(id);
-        return 0;
-    }
-
-    
-    // TODO: Error Handling
-
-    return id;
-}
-
-static unsigned int CreateShader(const string& vertexShader, const string& fragmentShader) {
-    unsigned int program = glCreateProgram();
-    unsigned int vs = CompileShader(GL_VERTEX_SHADER, vertexShader);
-    unsigned int fs = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);
-
-    glAttachShader(program, vs);
-    glAttachShader(program, fs);
-    glLinkProgram(program);
-    glValidateProgram(program);
-
-    glDeleteShader(vs);
-    glDeleteShader(fs);
-
-    return program;
-}
-
 Star initializeStar(string name, long mass) {
     return Star(name, mass);
 }
-
 
 void initializePlanet() {
     Vector3d Position;
@@ -89,7 +38,6 @@ int main() {
     double position[3] = {0, -7161.8, 0};
     double velocity[3] = { -1.0749, 0, 7.3862 };
     //Object satellite(100.0, position, velocity);
-
 
     GLFWwindow* window;
     if (!glfwInit())
@@ -125,48 +73,30 @@ int main() {
             2,3,0
         };
 
-        unsigned int vao;
-        glGenVertexArrays(1, &vao);
-        glBindVertexArray(vao);
+        VertexArray va;
+        VertexBuffer vb(positions, sizeof(positions));
+        BufferLayout layout;
 
-        VertexBuffer buffer_v(positions, sizeof(positions));
-
-        /*
-        unsigned int buffer;
-        glGenBuffers(1, &buffer);
-        glBindBuffer(GL_ARRAY_BUFFER, buffer);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
-        */
-
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
+        layout.push<float>(2);
+        va.AddBuffer(vb, layout);
 
         IndexBuffer buffer_i(indicies, 6);
-        /*
-        unsigned int index_buffer;
-        glGenBuffers(1, &index_buffer);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicies), indicies, GL_STATIC_DRAW);
-        */
 
-        unsigned int shader = CreateShader(loadShader("gui/shaders/vertex.shader"), loadShader("gui/shaders/fragment.shader"));
-        glUseProgram(shader);
+        Shader shader("gui/shaders/vertex.shader", "gui/shaders/fragment.shader");
+        shader.bind();
+        shader.SetUniform4f("u_Color", 249.0 / 255.0, 215.0 / 255.0, 28.0 / 255.0, 1.0);
 
-        int l = glGetUniformLocation(shader, "u_Color");
-        glUniform4f(l, 249.0 / 255.0, 215.0 / 255.0, 28.0 / 255.0, 1.0);
-
-        glBindVertexArray(0);
-        glUseProgram(0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        va.unbind();
+        shader.unbind();
+        vb.unbind();
+        buffer_i.unbind();
 
         while (!glfwWindowShouldClose(window)) {
             /* Render here */
             glClear(GL_COLOR_BUFFER_BIT);
-            glUseProgram(shader);
+            shader.bind();
 
-            glBindVertexArray(vao);
-            buffer_i.bind();
+            va.bind();
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 
             /* Swap front and back buffers */
@@ -175,7 +105,6 @@ int main() {
             /* Poll for and process events */
             glfwPollEvents();
         }
-        glDeleteProgram(shader);
     }
     glfwTerminate();
 

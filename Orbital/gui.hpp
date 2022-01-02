@@ -19,8 +19,11 @@ glm::mat4 getProjectionMatrix() {
 	return ProjectionMatrix;
 }
 
+float cameraRadius = 3.0f;
+
 // Initial position : on +Z
-glm::vec3 position = glm::vec3(3, 0, 0);
+glm::vec3 position = glm::vec3(cameraRadius, 0, 0);
+glm::vec3 positionModifier = glm::vec3(3, 0, 0);
 // Initial horizontal angle : toward -Z
 float horizontalAngle = 0;
 // Initial vertical angle : none
@@ -28,7 +31,7 @@ float verticalAngle = 3.14f;
 // Initial Field of View
 float initialFoV = 45.0f;
 
-float speed = 0.5f; // 3 units / second
+float speed = 1.0f; // 3 units / second
 float mouseSpeed = 0.005f;
 
 
@@ -52,12 +55,16 @@ void computeMatrices(GLFWwindow* window) {
 	horizontalAngle += mouseSpeed * float(1024 / 2 - xpos);
 	verticalAngle += mouseSpeed * float(768 / 2 - ypos);
 	
+	position = cameraRadius * glm::vec3(cos(verticalAngle) * cos(horizontalAngle), cos(verticalAngle) * sin(horizontalAngle), sin(verticalAngle));
+
 	// Direction : Spherical coordinates to Cartesian coordinates conversion
-	glm::vec3 direction(
+	/*glm::vec3 direction(
 		cos(verticalAngle) * sin(horizontalAngle),
 		sin(verticalAngle),
 		cos(verticalAngle) * cos(horizontalAngle)
-	);
+	);*/
+
+	glm::vec3 direction = position * -1.0f;
 
 	//glm::vec3 direction(
 	//	-3, 0, 0
@@ -65,9 +72,9 @@ void computeMatrices(GLFWwindow* window) {
 
 	// Right vector
 	glm::vec3 right = glm::vec3(
+		cos(horizontalAngle - 3.14f / 2.0f),
 		sin(horizontalAngle - 3.14f / 2.0f),
-		0,
-		cos(horizontalAngle - 3.14f / 2.0f)
+		0
 	);
 
 	// Up vector
@@ -75,20 +82,20 @@ void computeMatrices(GLFWwindow* window) {
 	
 	// Move forward
 	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-		position += direction * deltaTime * speed;
+		cameraRadius -= deltaTime * speed;
 	}
 	// Move backward
 	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-		position -= direction * deltaTime * speed;
+		cameraRadius += deltaTime * speed;
 	}
-	// Strafe right
-	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
-		position += right * deltaTime * speed;
-	}
-	// Strafe left
-	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
-		position -= right * deltaTime * speed;
-	}
+	//// Strafe right
+	//if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+	//	position += right * deltaTime * speed;
+	//}
+	//// Strafe left
+	//if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+	//	position -= right * deltaTime * speed;
+	//}
 	
 	float FoV = initialFoV;// - 5 * glfwGetMouseWheel(); // Now GLFW 3 requires setting up a callback for this. It's a bit too complicated for this beginner's tutorial, so it's disabled instead.
 
@@ -165,7 +172,7 @@ int initGUI() {
 	shader.bind();
 
 
-	Texture texture("earth2048.bmp");
+	Texture texture("highres.jpg");
 
 	SphereRender sphere(1, 50, 40);
 
@@ -183,7 +190,7 @@ int initGUI() {
 	std::cout << sphere.getVerticiesSize() << endl;
 	std::cout << sphere.getIndexCount() << endl;
 
-	glm::vec3 lightPos = glm::vec3(4, 4, 4);
+	glm::vec3 lightPos = glm::vec3(-4, -6, 0);
 	shader.SetUniform3f("LightPosition_worldspace", lightPos.x, lightPos.y, lightPos.z);
 	shader.SetUniform1i("myTextureSampler", 0);
 

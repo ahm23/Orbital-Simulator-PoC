@@ -6,7 +6,7 @@
 Texture::Texture(const string& path) : id(0), filepath(path), localBuffer(nullptr), width(0), height(0), BPP(0)
 {
 	// Flip texture because OpenGL uses pixels from bottom left.
-	stbi_set_flip_vertically_on_load(1);
+	//stbi_set_flip_vertically_on_load(1);
 	localBuffer = stbi_load(path.c_str(), &width, &height, &BPP, 4);
 
 	GL(glGenTextures(1, &id));

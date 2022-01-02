@@ -174,7 +174,7 @@ int initGUI() {
 
 	Texture texture("highres.jpg");
 
-	SphereRender sphere(1, 50, 40);
+	SphereRender sphere(1, 100, 100);
 
 	IndexBuffer ib(sphere.getIndices(), sphere.getIndexCount());
 

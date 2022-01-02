@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <GL/glew.h>
+#include "utils_debug.h"
 
 using namespace std;
 
@@ -12,22 +13,42 @@ Shader::Shader(const string& filename_vertex, const string& filename_fragment): 
 
 Shader::~Shader()
 {
-    glDeleteProgram(id);
+    GL(glDeleteProgram(id));
 }
 
 void Shader::bind() const
 {
-    glUseProgram(id);
+    GL(glUseProgram(id));
 }
 
 void Shader::unbind() const
 {
-    glUseProgram(0);
+    GL(glUseProgram(0));
+}
+
+void Shader::SetUniform1i(const string& name, int v)
+{
+    GL(glUniform1i(GetUniformLocation(name), v));
+}
+
+void Shader::SetUniform1f(const string& name, float v)
+{
+    GL(glUniform1f(GetUniformLocation(name), v));
+}
+
+void Shader::SetUniform3f(const string& name, float v0, float v1, float v2)
+{
+    GL(glUniform3f(GetUniformLocation(name), v0, v1, v2));
 }
 
 void Shader::SetUniform4f(const string& name, float v0, float v1, float v2, float v3)
 {
-    glUniform4f(GetUniformLocation(name), 249.0 / 255.0, 215.0 / 255.0, 28.0 / 255.0, 1.0);
+    glUniform4f(GetUniformLocation(name),v0,v1,v2,v3);
+}
+
+void Shader::SetUniformMat4f(const std::string& name, const glm::mat4& matrix)
+{
+    GL(glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &matrix[0][0]));
 }
 
 std::string Shader::loadShader(const string &filepath) {
@@ -45,23 +66,20 @@ unsigned int Shader::CompileShader(unsigned int type, const string& source)
 {
     unsigned int id = glCreateShader(type);
     const char* src = source.c_str();
-    glShaderSource(id, 1, &src, nullptr);
-    glCompileShader(id);
+    GL(glShaderSource(id, 1, &src, nullptr));
+    GL(glCompileShader(id));
 
     int result;
-    glGetShaderiv(id, GL_COMPILE_STATUS, &result);
+    GL(glGetShaderiv(id, GL_COMPILE_STATUS, &result));
     if (!result) {
         int len;
-        glGetShaderiv(id, GL_COMPILE_STATUS, &len);
+        GL(glGetShaderiv(id, GL_COMPILE_STATUS, &len));
         char* message = (char*)malloc(len * sizeof(char));
-        glGetShaderInfoLog(id, len, &len, message);
+        GL(glGetShaderInfoLog(id, len, &len, message));
         std::cout << message << endl;
-        glDeleteShader(id);
+        GL(glDeleteShader(id));
         return 0;
     }
-
-
-    // TODO: Error Handling
 
     return id;
 }
@@ -71,13 +89,13 @@ unsigned int Shader::CreateShader(const string& vertexShader, const string& frag
     unsigned int vs = CompileShader(GL_VERTEX_SHADER, vertexShader);
     unsigned int fs = CompileShader(GL_FRAGMENT_SHADER, fragmentShader);
 
-    glAttachShader(program, vs);
-    glAttachShader(program, fs);
-    glLinkProgram(program);
-    glValidateProgram(program);
+    GL(glAttachShader(program, vs));
+    GL(glAttachShader(program, fs));
+    GL(glLinkProgram(program));
+    GL(glValidateProgram(program));
 
-    glDeleteShader(vs);
-    glDeleteShader(fs);
+    GL(glDeleteShader(vs));
+    GL(glDeleteShader(fs));
 
     return program;
 }

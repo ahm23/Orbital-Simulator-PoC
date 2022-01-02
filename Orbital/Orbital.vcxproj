@@ -22,6 +22,9 @@
     <ClCompile Include="BufferLayout.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="SphereRender.cpp" />
+    <ClCompile Include="stb_image.cpp" />
+    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="VertexArray.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="Kinetics.cpp" />
@@ -32,8 +35,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BufferLayout.h" />
+    <ClInclude Include="gui.hpp" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="SphereRender.h" />
+    <ClInclude Include="stb_image.h" />
+    <ClInclude Include="Texture.h" />
+    <ClInclude Include="utils_debug.h" />
     <ClInclude Include="VertexArray.h" />
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="Kinetics.h" />
@@ -42,6 +50,11 @@
     <ClInclude Include="Planet.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="utils_math.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="earth2048.bmp" />
+    <Image Include="google.png" />
+    <Image Include="image.jpg" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -148,7 +161,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC;</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\netagive\Documents\Visual Studio 2022\Libraries\eigen-3.4.0;C:\Users\netagive\Documents\Visual Studio 2022\Libraries\glfw-3.3.6.bin.WIN64\include;C:\Users\netagive\Documents\Visual Studio 2022\Libraries\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\netagive\Documents\Visual Studio 2022\Libraries\eigen-3.4.0;C:\Users\netagive\Documents\Visual Studio 2022\Libraries\glfw-3.3.6.bin.WIN64\include;C:\Users\netagive\Documents\Visual Studio 2022\Libraries\glew-2.1.0\include;C:\Users\netagive\Documents\Visual Studio 2022\Libraries\glm\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -166,7 +179,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLEW_STATIC;</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\netagive\Documents\Visual Studio 2022\Libraries\eigen-3.4.0;C:\Users\netagive\Documents\Visual Studio 2022\Libraries\glfw-3.3.6.bin.WIN64\include;C:\Users\netagive\Documents\Visual Studio 2022\Libraries\glew-2.1.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\netagive\Documents\Visual Studio 2022\Libraries\eigen-3.4.0;C:\Users\netagive\Documents\Visual Studio 2022\Libraries\glfw-3.3.6.bin.WIN64\include;C:\Users\netagive\Documents\Visual Studio 2022\Libraries\glew-2.1.0\include;C:\Users\netagive\Documents\Visual Studio 2022\Libraries\glm\glm;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>

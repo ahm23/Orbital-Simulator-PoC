@@ -34,7 +34,7 @@ protected:
 	static long update_freq;
 	bool toggle_kinetic = false;
 
-	ObjectConfig config;
+	ObjectConfig config_obj;
 
 	void kineticProcess();
 };

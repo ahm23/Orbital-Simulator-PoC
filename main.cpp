@@ -32,14 +32,14 @@ using namespace std;
 using namespace Eigen;
 
 Star** loadStars() {
-    FileParser parser("C:\\Users\\netagive\\Desktop\\Orbital\\Orbital\\core\\utils\\Stars.dat");
+    FileParser parser("C:\\Users\\netagive\\Desktop\\Orbital\\core\\Stars.dat");
     Star** starList = (Star**)malloc(sizeof(StarConfigPackage) * parser.getCount());
     parser.parse<Star>(starList);
     return starList;
 }
 
 Planet** loadPlanets() {
-    FileParser parser("C:\\Users\\netagive\\Desktop\\Orbital\\Orbital\\core\\utils\\Planets.dat");
+    FileParser parser("C:\\Users\\netagive\\Desktop\\Orbital\\core\\Planets.dat");
     Planet** planetList = (Planet**)malloc(sizeof(PlanetConfigPackage) * parser.getCount());
     parser.parse<Planet>(planetList);
     return planetList;

@@ -31,20 +31,33 @@
 using namespace std;
 using namespace Eigen;
 
-Star** initializeStars() {
-    int starCount = 0;
-    StarConfigPackage** configs = parseStars(&starCount);
-
-    Star** starList = (Star**)malloc(sizeof(StarConfigPackage) * starCount);
-
-    for (int i = 0; i < starCount; i++) {
-        Star* star = new Star(*configs[i]);
-        starList[i] = star;
-    }
-    dp_destruct(configs, starCount);
-    std::cout << "test" << std::endl;
+Star** loadStars() {
+    FileParser parser("C:\\Users\\netagive\\Desktop\\Orbital\\Orbital\\core\\utils\\Stars.dat");
+    Star** starList = (Star**)malloc(sizeof(StarConfigPackage) * parser.getCount());
+    parser.parse<Star>(starList);
     return starList;
 }
+
+Planet** loadPlanets() {
+    FileParser parser("C:\\Users\\netagive\\Desktop\\Orbital\\Orbital\\core\\utils\\Planets.dat");
+    Planet** planetList = (Planet**)malloc(sizeof(PlanetConfigPackage) * parser.getCount());
+    parser.parse<Planet>(planetList);
+    return planetList;
+}
+
+/*Meteor** loadMeteors() {
+    FileParser parser("C:\\Users\\netagive\\Desktop\\Orbital\\Orbital\\core\\utils\\Meteors.dat");
+    Meteor** meteorList = (Meteor**)malloc(sizeof(MeteorConfigPackage) * parser.getCount());
+    parser.parse<Meteor>(meteorList);
+    return meteorList;
+}*/
+
+/*Comet** loadComets() {
+    FileParser parser("C:\\Users\\netagive\\Desktop\\Orbital\\Orbital\\core\\utils\\Comets.dat");
+    Comet** cometList = (Comet**)malloc(sizeof(CometConfigPackage) * parser.getCount());
+    parser.parse<Comet>(cometList);
+    return cometList;
+}*/
 
 /*Planet* initializePlanet(string name, double mass, double gravParam, float inclination_ecliptic) {
     Eigen::Vector3d Position, Velocity;
@@ -58,7 +71,7 @@ Star** initializeStars() {
 
 int main() {
     //Star sun = Star("Sun", 1988470000000000000000000000000.0);
-    initializeStars();
+    loadStars();
     //initializePlanet("Earth", 5972200000000000000000000.0, 1.326 * pow(10, 11), 0.4101524);
     double position[3] = {0, -7161.8, 0};
     double velocity[3] = { -1.0749, 0, 7.3862 };

@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="BufferLayout.cpp" />
     <ClCompile Include="core\celestial\CelestialBody.cpp" />
+    <ClCompile Include="core\celestial\Planet.cpp" />
     <ClCompile Include="core\mechanics\Kinetics.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="Shader.cpp" />
@@ -65,6 +66,9 @@
   <ItemGroup>
     <None Include="gui\shaders\fragment.shader" />
     <None Include="gui\shaders\vertex.shader" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="core\utils\Stars.dat" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

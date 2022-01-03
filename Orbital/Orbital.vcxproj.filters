@@ -66,6 +66,9 @@
     <ClCompile Include="core\celestial\Star.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="core\celestial\Planet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\Object.h">
@@ -143,5 +146,8 @@
   <ItemGroup>
     <None Include="gui\shaders\fragment.shader" />
     <None Include="gui\shaders\vertex.shader" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="core\utils\Stars.dat" />
   </ItemGroup>
 </Project>

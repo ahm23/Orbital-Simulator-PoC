@@ -12,6 +12,14 @@ using namespace std;
 using namespace std::chrono;
 using namespace Eigen;
 
+struct PlanetConfig {
+};
+
+struct PlanetConfigPackage {
+	ObjectConfig config_obj;
+	CelestialConfig config_clst;
+	PlanetConfig config_planet;
+};
 
 class Planet: public CelestialBody {
 public:
@@ -24,11 +32,11 @@ public:
 	float ecliptic_i;
 	double mu;
 
-	Planet(string n, double m, double mu, float ei, ObjectConfig obj) : CelestialBody(obj) {
+	Planet(PlanetConfigPackage config) : CelestialBody{ config.config_obj, config.config_clst } {
 		//name = (char*)malloc(sizeof(char) * n.length());
 		//mass = m;
 		this->mu = mu;
-		ecliptic_i = ei;
+		ecliptic_i = 0;
 		orbit.mu = mu;
 		kinetics.p << 0, 0, 0;
 		kinetics.v << 0, 0, 0;

@@ -3,12 +3,12 @@
 #include "CelestialBody.h"
 
 struct StarConfig {
-	double avg_radius;
 	double temperature;
 };
 
 struct StarConfigPackage {
 	ObjectConfig config_obj;
+	CelestialConfig config_clst;
 	StarConfig config_star;
 };
 

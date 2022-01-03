@@ -6,7 +6,6 @@
 #include <Eigen/Dense>
 #include <Windows.h>
 
-using namespace std;
 using namespace Eigen;
 
 class Orbit {
@@ -33,7 +32,6 @@ public:
 	bool getInitStatus() {
 		return init;
 	}
-
 
 private:
 	bool init = false;
@@ -64,7 +62,7 @@ private:
 		*p = ROTATION * position_p;
 		*v = ROTATION * velocity_p;
 
-		std::cout << r_dot << endl << rta_dot;
+		std::cout << r_dot << std::endl << rta_dot;
 		/*
 		std::lock_guard<std::mutex> lk(kinetic_m);
 		init = true;

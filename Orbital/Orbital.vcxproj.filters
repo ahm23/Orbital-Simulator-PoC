@@ -24,13 +24,10 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Object.cpp">
+    <ClCompile Include="core\Object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Orbit.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Kinetics.cpp">
+    <ClCompile Include="core\mechanics\Orbit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="IndexBuffer.cpp">
@@ -60,18 +57,24 @@
     <ClCompile Include="SphereRender.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="core\mechanics\Kinetics.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="core\celestial\CelestialBody.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="core\celestial\Star.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Object.h">
+    <ClInclude Include="core\Object.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Orbit.h">
+    <ClInclude Include="core\mechanics\Orbit.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Kinetics.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Planet.h">
+    <ClInclude Include="core\celestial\Planet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="utils_math.h">
@@ -110,6 +113,21 @@
     <ClInclude Include="gui.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="core\mechanics\Kinetics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core\celestial\CelestialBody.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core\celestial\Star.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core\constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="core\utils\utils_parse.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="image.jpg">
@@ -121,5 +139,9 @@
     <Image Include="earth2048.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="gui\shaders\fragment.shader" />
+    <None Include="gui\shaders\vertex.shader" />
   </ItemGroup>
 </Project>

@@ -2,32 +2,16 @@
 
 #include <chrono>
 #include <math.h>
-#include "Orbit.h"
-#include "Kinetics.h"
+#include <Eigen/Dense>
+#include "../mechanics/Orbit.h"
+#include "../mechanics/Kinetics.h"
+#include "CelestialBody.h"
 #include <condition_variable>
 
 using namespace std;
 using namespace std::chrono;
+using namespace Eigen;
 
-class CelestialBody {
-public:
-	char* name;
-	double mass;
-
-
-private:
-
-};
-
-class Star : public CelestialBody {
-public:
-	Star(string n, double m) {
-		name = (char*)malloc(sizeof(char) * n.length());
-		
-		mass = m;
-
-	}
-};
 
 class Planet: public CelestialBody {
 public:
@@ -40,26 +24,26 @@ public:
 	float ecliptic_i;
 	double mu;
 
-	Planet(double m, double mu, float ei) {
-		mass = m;
+	Planet(string n, double m, double mu, float ei, ObjectConfig obj) : CelestialBody(obj) {
+		//name = (char*)malloc(sizeof(char) * n.length());
+		//mass = m;
 		this->mu = mu;
 		ecliptic_i = ei;
 		orbit.mu = mu;
 		kinetics.p << 0, 0, 0;
 		kinetics.v << 0, 0, 0;
 		kinetics.a << 0, 0, 0;
-		std::thread kineticThread([this] { this->kineticProcess(); });
-		kineticThread.detach();
 	}
 
-	
+	~Planet() {
+		std::cout << "Destruct." << endl;
+	}
+
 	void initKineticProcess(Vector3d p, Vector3d v) {
 		kinetics.p = p;
 		kinetics.v = v;
-		std::lock_guard<std::mutex> lk(kinetic_m);
-		initStatus = true;
-		kinetic_cv.notify_one();
-
+		std::thread kineticThread([this] { this->kineticProcess(); });
+		kineticThread.detach();
 	}
 
 	unsigned long time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -67,18 +51,18 @@ public:
 
 
 private:
-	bool initStatus = false;
+	bool toggle_kinetic = true;
 
 	void kineticProcess() {
 		std::unique_lock<std::mutex> lk(kinetic_m);
-		kinetic_cv.wait(lk, [&] {return initStatus; });
+		kinetic_cv.wait(lk, [&] {return toggle_kinetic; });
 		while (true) {
 			time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-			system("cls");
+			//system("cls");
 			kinetics.a = (-mu / pow(kinetics.p.norm(),3)) * kinetics.p;
 			kinetics.v = kinetics.v + kinetics.a * (double)(time + update_freq + 1) / (double)1000 - kinetics.a * (double)time / (double)1000;
 			kinetics.p = kinetics.p + kinetics.v * (double)(time + update_freq + 1) / (double)1000 - kinetics.v * (double)time / (double)1000;
-			std::cout << setprecision(12) << kinetics.p.norm() << endl;
+			//std::cout << setprecision(12) << kinetics.p.norm() << endl;
 			this_thread::sleep_for(chrono::milliseconds(1));
 		}
 	}

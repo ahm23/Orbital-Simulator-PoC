@@ -20,34 +20,40 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BufferLayout.cpp" />
+    <ClCompile Include="core\celestial\CelestialBody.cpp" />
+    <ClCompile Include="core\mechanics\Kinetics.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="SphereRender.cpp" />
+    <ClCompile Include="core\celestial\Star.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="VertexArray.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
-    <ClCompile Include="Kinetics.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Object.cpp" />
-    <ClCompile Include="Orbit.cpp" />
+    <ClCompile Include="core\Object.cpp" />
+    <ClCompile Include="core\mechanics\Orbit.cpp" />
     <ClCompile Include="Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BufferLayout.h" />
+    <ClInclude Include="core\celestial\CelestialBody.h" />
+    <ClInclude Include="core\constants.h" />
+    <ClInclude Include="core\mechanics\Kinetics.h" />
+    <ClInclude Include="core\utils\utils_parse.h" />
     <ClInclude Include="gui.hpp" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="SphereRender.h" />
+    <ClInclude Include="core\celestial\Star.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="utils_debug.h" />
     <ClInclude Include="VertexArray.h" />
     <ClInclude Include="VertexBuffer.h" />
-    <ClInclude Include="Kinetics.h" />
-    <ClInclude Include="Object.h" />
-    <ClInclude Include="Orbit.h" />
-    <ClInclude Include="Planet.h" />
+    <ClInclude Include="core\Object.h" />
+    <ClInclude Include="core\mechanics\Orbit.h" />
+    <ClInclude Include="core\celestial\Planet.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="utils_math.h" />
   </ItemGroup>
@@ -55,6 +61,10 @@
     <Image Include="earth2048.bmp" />
     <Image Include="google.png" />
     <Image Include="image.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="gui\shaders\fragment.shader" />
+    <None Include="gui\shaders\vertex.shader" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

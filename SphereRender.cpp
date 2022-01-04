@@ -183,7 +183,7 @@ void SphereRender::buildVerticesFlat()
 
             // if 1st stack and last stack, store only 1 triangle per sector
             // otherwise, store 2 triangles (quad) per sector
-            if (i == 0) // a triangle for first stack ==========================
+            if (i == 0) // a triangle for first stack 
             {
                 addVertex(v1.x, v1.y, v1.z);
                 addVertex(v2.x, v2.y, v2.z);
@@ -210,7 +210,7 @@ void SphereRender::buildVerticesFlat()
 
                 index += 3;     // for next
             }
-            else if (i == (stackCount - 1)) // a triangle for last stack =========
+            else if (i == (stackCount - 1)) // a triangle for last stack
             {
                 // put a triangle
                 addVertex(v1.x, v1.y, v1.z);
@@ -240,7 +240,7 @@ void SphereRender::buildVerticesFlat()
 
                 index += 3;     // for next
             }
-            else // 2 triangles for others ====================================
+            else // 2 triangles for others
             {
                 // put quad vertices: v1-v2-v3-v4
                 addVertex(v1.x, v1.y, v1.z);

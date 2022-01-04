@@ -187,8 +187,8 @@ int initGUI() {
 	va.AddBuffer(vb, layout);
 
 	// debug
-	std::cout << sphere.getVerticiesSize() << endl;
-	std::cout << sphere.getIndexCount() << endl;
+	//std::cout << sphere.getVerticiesSize() << endl;
+	//std::cout << sphere.getIndexCount() << endl;
 
 	glm::vec3 lightPos = glm::vec3(-4, -6, 0);
 	shader.SetUniform3f("LightPosition_worldspace", lightPos.x, lightPos.y, lightPos.z);

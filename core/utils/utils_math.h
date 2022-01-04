@@ -1,5 +1,6 @@
 #pragma once
 #include <math.h>
+#include "../constants.h"
 
 double kepler_solve(double init, double e) {
 	double precision = 0.00001;
@@ -10,3 +11,6 @@ double kepler_solve(double init, double e) {
 	return E;
 }
 
+double calculate_mu(double mass, double ref_mass) {
+	return GRAV_KM * (mass + ref_mass);
+}

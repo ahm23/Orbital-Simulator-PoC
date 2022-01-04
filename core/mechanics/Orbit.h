@@ -8,25 +8,35 @@
 
 using namespace Eigen;
 
+struct COE {
+	double a = NULL;
+	double e = NULL;
+	double i = NULL;
+	double raan = NULL;
+	double omega = NULL;
+	double TA = NULL;
+};
+
+struct OrbitInit {
+	COE coe;
+	unsigned int type;
+	double init_r = NULL;
+	double init_mu;
+};
+
 class Orbit {
 
 public:
-	//string name;
-	double mu;
-	double a;
-	double e;
-	double i;
-	double raan;
-	double omega;
+	COE coe;
 
-	void initOrbitCOE_TA(double init_ta, double init_a, double init_e, double init_i, double init_raan, double init_omega, Vector3d *p, Vector3d* v) {
-		double init_r = (a * (1 - pow(init_e, 2))) / (1 + init_e * cos(init_ta));
-		initOrbitCOE(init_r, init_ta, init_a, init_e, init_i, init_raan, init_omega, p, v);
+	void initOrbitCOE_TA(OrbitInit init, Vector3d *p, Vector3d* v) {
+		double init_r = (init.coe.a * (1 - pow(init.coe.e, 2))) / (1 + init.coe.e * cos(init.coe.TA));
+		initOrbitCOE(init, p, v);
 	}
 
-	void initOrbitCOE_R(double init_r, double init_a, double init_e, double init_i, double init_raan, double init_omega, Vector3d* p, Vector3d* v) {
-		double init_ta = -acos((init_a * (1 - pow(init_e, 2)) - init_r) / (init_r * init_e));
-		initOrbitCOE(init_r, init_ta, init_a, init_e, init_i, init_raan, init_omega, p, v);
+	void initOrbitCOE_R(OrbitInit init, Vector3d* p, Vector3d* v) {
+		init.coe.TA = -acos((init.coe.a * (1 - pow(init.coe.e, 2)) - init.init_r) / (init.init_r * init.coe.e));
+		initOrbitCOE(init, p, v);
 	}
 
 	bool getInitStatus() {
@@ -36,38 +46,34 @@ public:
 private:
 	bool init = false;
 
-	void initOrbitCOE(double init_r, double init_ta, double init_a, double init_e, double init_i, double init_raan, double init_omega, Vector3d* p, Vector3d* v) {
-		a = init_a;
-		e = init_e;
-		i = init_i;
-		raan = init_raan;
-		omega = init_omega;
+	void initOrbitCOE(OrbitInit init, Vector3d* p, Vector3d* v) {
+		coe = init.coe;
 
 		Matrix3d ROTATION{
-			{cos(init_raan) * cos(init_omega) - sin(init_raan) * cos(init_i) * sin(init_omega), -cos(init_raan) * sin(init_omega) - sin(init_raan) * cos(init_i) * cos(init_omega), sin(init_raan) * sin(init_i)},
-			{sin(init_raan) * cos(init_omega) + cos(init_raan) * cos(init_i) * sin(init_omega), -sin(init_raan) * sin(init_omega) + cos(init_raan) * cos(init_i) * cos(init_omega), -cos(init_raan) * sin(init_i)},
-			{sin(init_i) * sin(init_omega), sin(init_i) * cos(init_omega), cos(init_i)}
+			{cos(coe.raan) * cos(coe.omega) - sin(coe.raan) * cos(coe.i) * sin(coe.omega), -cos(coe.raan) * sin(coe.omega) - sin(coe.raan) * cos(coe.i) * cos(coe.omega), sin(coe.raan) * sin(coe.i)},
+			{sin(coe.raan) * cos(coe.omega) + cos(coe.raan) * cos(coe.i) * sin(coe.omega), -sin(coe.raan) * sin(coe.omega) + cos(coe.raan) * cos(coe.i) * cos(coe.omega), -cos(coe.raan) * sin(coe.i)},
+			{sin(coe.i) * sin(coe.omega), sin(coe.i) * cos(coe.omega), cos(coe.i)}
 		};
 		Vector3d position_p;
 		Vector3d velocity_p;
 
-		double r_dot = sqrt(mu / (a * (1 - pow(e, 2)))) * e * sin(init_ta);
-		//double ta_dot = sqrt(mu / pow(a, 3)) * pow((1 + e * cos(init_ta)), 2) / pow(1 - pow(e, 2), 3 / 2);
-		double rta_dot = sqrt(mu / (a * (1 - pow(e, 2)))) * (1+ e * cos(init_ta));
+		double r_dot = sqrt(init.init_mu / (coe.a * (1 - pow(coe.e, 2)))) * coe.e * sin(coe.TA);
+		//double ta_dot = sqrt(init.init_mu / pow(a, 3)) * pow((1 + e * cos(init_ta)), 2) / pow(1 - pow(e, 2), 3 / 2);
+		double rta_dot = sqrt(init.init_mu / (coe.a * (1 - pow(coe.e, 2)))) * (1+ coe.e * cos(coe.TA));
 
 
-		position_p << init_r * (double)cos(init_ta), init_r * (double)sin(init_ta), 0;
-		velocity_p << -sqrt(mu/ (a * (1 - pow(e, 2))))*sin(init_ta), sqrt(mu / (a * (1 - pow(e, 2))))*(e+cos(init_ta)), 0;
+		position_p << init.init_r * (double)cos(coe.TA), init.init_r * (double)sin(coe.TA), 0;
+		velocity_p << -sqrt(init.init_mu/ (coe.a * (1 - pow(coe.e, 2))))*sin(coe.TA), sqrt(init.init_mu / (coe.a * (1 - pow(coe.e, 2))))*(coe.e+cos(coe.TA)), 0;
+
+		std::cout << position_p << std::endl;
 
 		*p = ROTATION * position_p;
 		*v = ROTATION * velocity_p;
 
-		std::cout << r_dot << std::endl << rta_dot;
+		//std::cout << r_dot << std::endl << rta_dot;
 		/*
 		std::lock_guard<std::mutex> lk(kinetic_m);
 		init = true;
 		kinetic_cv.notify_one();*/
 	}
-
 };
-

@@ -25,24 +25,41 @@ public:
     int getCount() { return count; }
 
     template<typename T>
-    void parse(T** var) { std::cout << "Unknown Object Type!"; }
+    void parseObjects(T** var) { std::cout << "Unknown Object Type!"; }
     template<>
-    void parse<Star>(Star** list) {
+    void parseObjects<Star>(Star** list) {
         for (int i = 0; i < count; i++) {
             StarConfigPackage star{};
             file >> star.config_obj.name >> star.config_obj.mass >> star.config_obj.mu
                 >> star.config_clst.avg_radius >> star.config_star.temperature;
-            std::cout << star.config_obj.name << endl;
             list[i] = new Star(star);
         }
     }
     template<>
-    void parse<Planet>(Planet** list) {
+    void parseObjects<Planet>(Planet** list) {
         for (int i = 0; i < count; i++) {
             PlanetConfigPackage planet;
             file >> planet.config_obj.name >> planet.config_obj.mass >> planet.config_obj.mu
-                >> planet.config_clst.avg_radius;
+                >> planet.config_clst.avg_radius >> planet.config_planet.ecliptic_i;
+            file.ignore(std::numeric_limits<std::streamsize>::max(), file.widen('\n'));
             list[i] = new Planet(planet);
+        }
+    }
+
+    OrbitInit parseOrbit(int num, Planet* planet, std::string* ref) {
+        //std::cout << num << endl;
+        for (int i = 0; i <= num*(num + 1) + 1; ++i)
+            file.ignore(std::numeric_limits<std::streamsize>::max(), file.widen('\n'));
+        OrbitInit init;
+        file >> init.type;
+        file >> *ref;
+        switch (init.type) {
+            case 0:
+                file >> init.coe.TA >> init.coe.a >> init.coe.e >> init.coe.i >> init.coe.omega >> init.coe.raan;
+                return init;
+            case 1:
+                file >> init.init_r >> init.coe.a >> init.coe.e >> init.coe.i >> init.coe.omega >> init.coe.raan;
+                return init;
         }
     }
 
@@ -51,20 +68,7 @@ private:
     int count;
 };
 
-
-/*StarConfigPackage** parseStars(int* starCount) {
-    std::ifstream config("C:\\Users\\netagive\\Desktop\\Orbital\\Orbital\\core\\utils\\Stars.txt");
-    const int count = std::count(std::istreambuf_iterator<char>(config), std::istreambuf_iterator<char>(), '\n');
-
-    StarConfigPackage** starList = (StarConfigPackage**)malloc(sizeof(StarConfigPackage) * count);
-
-
-    for (int i = 0; i < count; i++) {
-        StarConfigPackage* stars = new StarConfigPackage;
-        config >> stars->config_obj.name >> stars->config_obj.mass >> stars->config_obj.mu
-            >> stars->config_star.avg_radius >> stars->config_star.temperature;
-        starList[i] = stars;
-    }
-    *starCount = count;
-    return starList;
-}*/
+enum OrbitPrelimMethod {
+    COE_R = 0,
+    COE_T = 1
+};

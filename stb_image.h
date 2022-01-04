@@ -75,7 +75,7 @@ RECENT REVISION HISTORY:
    See end of file for full revision history.
 
 
- ============================    Contributors    =========================
+    Contributors  
 
  Image formats                          Extensions, features
     Sean Barrett (jpeg, png, bmp)          Jetro Lauha (stbi_info)

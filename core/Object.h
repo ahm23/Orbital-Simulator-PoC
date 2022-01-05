@@ -11,13 +11,16 @@
 #include "mechanics/Kinematics.h"
 
 enum ObjectTypes {
-	STAR,
-	PLANET,
-	MOON,
-	ASTEROID,
-	COMET,
-	SATTELITE
+	BARYCENTRE = 0,
+	STAR = 1,
+	PLANET = 2,
+	MOON = 3,
+	ASTEROID = 4,
+	COMET = 5,
+	SATTELITE = 6
 };
+
+static const char* filenames[] = { "Stars.dat", "Planets.dat" };
 
 struct ObjectConfig {
 	std::string name;

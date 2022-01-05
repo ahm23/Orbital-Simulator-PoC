@@ -60,14 +60,15 @@ public:
     }
 
 
-    OrbitInit parseOrbit(int num, Planet* planet, std::string* ref) {
+    OrbitInit parseOrbit(int num, Object* planet, int* ref_t, std::string* ref_o) {
         //std::cout << num << endl;
         for (int i = 0; i <= 2 * num - 1; ++i) {
             std::string line; std::getline(file, line, '\n');
         }
         OrbitInit init;
         file >> init.type;
-        file >> *ref;
+        file >> *ref_t;
+        file >> *ref_o;
         switch (init.type) {
             case 0:
                 file >> init.coe.TA >> init.coe.a >> init.coe.e >> init.coe.i >> init.coe.raan >> init.coe.omega;

@@ -11,5 +11,4 @@ public:
 	CelestialBody(ObjectConfig config_obj, CelestialConfig config_clst);
 protected:
 	CelestialConfig config_clst;
-	double mu = 0;
 };

@@ -1,6 +1,6 @@
 #include "Object.h"
 
-long Object::update_freq = 100;
+long Object::update_freq = 1000;
 
 Object::Object(ObjectConfig config_obj) {
 	this->config_obj = config_obj;
@@ -33,11 +33,10 @@ void Object::kineticProcess() {
 	kinetic_cv.wait(lk, [&] {return toggle_kinetic; });
 	while (true) {
 		time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-		system("cls");
-		kinetics.a = (-config_obj.mu / pow(kinetics.p.norm(), 3)) * kinetics.p;
+		kinetics.a = (-1.326 * pow(10, 11) / pow(kinetics.p.norm(), 3)) * kinetics.p;
 		kinetics.v = kinetics.v + kinetics.a * (double)(time + update_freq) / (double)1000 - kinetics.a * (double)time / (double)1000;
 		kinetics.p = kinetics.p + kinetics.v * (double)(time + update_freq) / (double)1000 - kinetics.v * (double)time / (double)1000;
-		std::cout << std::setprecision(12) << kinetics.p.norm() << std::endl;
+		std::cout << std::setprecision(12) << std::setw(10) << config_obj.name << std::setw(20) << kinetics.p.norm() << std::endl;
 		std::this_thread::sleep_for(std::chrono::milliseconds(update_freq));
 	}
 }

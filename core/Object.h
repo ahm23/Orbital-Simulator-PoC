@@ -10,6 +10,15 @@
 #include "mechanics/Orbit.h"
 #include "mechanics/Kinetics.h"
 
+enum ObjectTypes {
+	STAR,
+	PLANET,
+	MOON,
+	ASTEROID,
+	COMET,
+	SATTELITE
+};
+
 struct ObjectConfig {
 	std::string name;
 	double mass;

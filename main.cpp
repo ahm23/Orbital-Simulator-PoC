@@ -4,7 +4,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iomanip>
-#include "core/utils/utils_math.h"
 #include "core/celestial/Planet.h"
 #include "VertexBuffer.h";
 #include "IndexBuffer.h"
@@ -27,6 +26,7 @@
 #include "core/Object.h"
 #include "core/celestial/Star.h"
 #include "core/utils/utils_parse.h"
+#include "core/Sattelite.h"
 
 using namespace std;
 using namespace Eigen;
@@ -34,21 +34,29 @@ using namespace Eigen;
 std::string* planetMap;
 std::string* starMap;
 
-Star** loadStars() {
+std::vector<Star*> loadStars() {
     FileParser parser("C:\\Users\\netagive\\Desktop\\Orbital\\core\\Stars.dat");
-    Star** starList = (Star**)malloc(sizeof(void*) * parser.getCount());
-    parser.parseObjects<Star>(starList);
+    std::vector<Star*> starList;
+    parser.parseObjects<Star>(&starList);
     starMap = new std::string[parser.getCount()];
-    for (int i = 0; i < sizeof(*starList) / sizeof(void*); i++)
+    for (int i = 0; i < starList.size(); i++)
         starMap[i] = starList[i]->getName();
     return starList;
 }
 
-Planet** loadPlanets() {
+std::vector<Planet*> loadPlanets() {
     FileParser parser("C:\\Users\\netagive\\Desktop\\Orbital\\core\\Planets.dat");
-    Planet** planetList = (Planet**)malloc(sizeof(int*) * parser.getCount());
-    parser.parseObjects<Planet>(planetList);
+    std::vector<Planet*> planetList;
+    //Planet** planetList = (Planet**)malloc(sizeof(Planet) * parser.getCount());
+    parser.parseObjects<Planet>(&planetList);
     return planetList;
+}
+
+std::vector<Sattelite*> loadSattelites() {
+    FileParser parser("C:\\Users\\netagive\\Desktop\\Orbital\\core\\Sattelites.dat");
+    std::vector<Sattelite*> satteliteList;
+    parser.parseObjects<Sattelite>(&satteliteList);
+    return satteliteList;
 }
 
 /*Meteor** loadMeteors() {
@@ -65,7 +73,7 @@ Planet** loadPlanets() {
     return cometList;
 }*/
 
-void initializeOrbit(int num, Planet* planet, Star** starList) {
+void initializePlanetaryOrbit(int num, Planet* planet, std::vector<Star*>* starList) {
     FileParser parser("C:\\Users\\netagive\\Desktop\\Orbital\\core\\Planets.dat");
     
     Eigen::Vector3d Position, Velocity;
@@ -73,9 +81,7 @@ void initializeOrbit(int num, Planet* planet, Star** starList) {
 
     OrbitInit init = parser.parseOrbit(num, planet, &ref_object);
 
-    //vector<int>::iterator itr = std::find(starMap[0], starMap[4], ref_object);
-
-    init.init_mu = calculate_mu(planet->getMass(), starList[0]->getMass());
+    init.init_mu = calculate_mu(planet->getMass(), (starList[0][0])->getMass());
 
     planet->setMu(init.init_mu);
 
@@ -86,21 +92,32 @@ void initializeOrbit(int num, Planet* planet, Star** starList) {
         case 1:
             planet->orbit.initOrbitCOE_R(init, &Position, &Velocity);
             break;
+        case 2:
+            //planet->orbit.initOrbitCOE_R(init, &Position, &Velocity);
+            break;
+        case 3:
+            planet->orbit.initOrbitCOE_ML(init, &Position, &Velocity);
+            break;
     }
     planet->initKineticProcess(Position, Velocity);
 }
 
 
 
+void initializeSattelites() {
+
+}
+
+
 int main() {
-    //Star sun = Star("Sun", 1988470000000000000000000000000.0);
-    Star** starList = loadStars();
-    Planet** planetList = loadPlanets();
+    std::vector<Star*> starList = loadStars();
+    std::vector<Planet*> planetList = loadPlanets();
 
-
-    for (int i = 0; i < sizeof(*planetList)/8.0; i++) {
-        initializeOrbit(i, planetList[i], starList);
+    for (int i = 0; i < planetList.size(); i++) {
+        initializePlanetaryOrbit(i + 1, planetList[i], &starList);
     }
+
+
 
     //initializePlanet("Earth", 5972200000000000000000000.0, 1.326 * pow(10, 11), 0.4101524);
     double position[3] = {0, -7161.8, 0};

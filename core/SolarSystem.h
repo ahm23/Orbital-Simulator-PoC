@@ -12,16 +12,15 @@
 
 class SolarSystem {
 public:
-	std::vector<std::string> planetMap;
 	std::vector<std::string> starMap;
+	std::vector<std::string> planetMap;
 
 	std::vector<Star*> starList;
 	std::vector<Planet*> planetList;
 
 	SolarSystem();
 
-	Star* getStarFromName(std::string name);
-	Planet* getPlanetFromName(std::string name);
+	Object* getObjectFromName(ObjectTypes type, std::string name);
 
 private:
 	std::vector<Star*> loadStars();

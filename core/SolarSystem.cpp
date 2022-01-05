@@ -37,39 +37,6 @@ std::vector<Sattelite*> SolarSystem::loadSattelites() {
     return satteliteList;
 }
 
-//void SolarSystem::initializePlanetaryOrbit(int num) {
-//    FileParser parser("C:\\Users\\netagive\\Desktop\\Orbital\\core\\Planets.dat");
-//
-//    Eigen::Vector3d Position, Velocity;
-//    int ref_type;
-//    std::string ref_object;
-//
-//    Planet* planet = planetList[num - 1];
-//
-//    OrbitInit init = parser.parseOrbit(num, planet, &ref_type, &ref_object);
-//
-//    switch (ref_type) {
-//    case STAR:
-//        getStarFromName(ref_object);
-//        break;
-//    case PLANET:
-//        getPlanetFromName(ref_object);
-//        break;
-//    default:
-//        break;
-//    }
-//
-//    init.init_mu = calculate_mu(planet->getMass(), starList[0]->getMass());
-//
-//    //planet->setKinematicAnchor();
-//    planet->setMu(init.init_mu);
-//
-//    initializeOrbit(init, &(planet->orbit), &Position, &Velocity);
-//
-//    planet->initKinematicProcess(Position, Velocity);
-//}
-
-
 void SolarSystem::initializeOrbit(int num, ObjectTypes type) {
     Object* obj;
     std::string ref_object;
@@ -88,7 +55,7 @@ void SolarSystem::initializeOrbit(int num, ObjectTypes type) {
     OrbitInit init = parser.parseOrbit(num, obj, &ref_type, &ref_object);
     init.init_mu = calculate_mu(obj->getMass(), starList[0]->getMass());
 
-    //planet->setKinematicAnchor();
+    obj->setKinematicAnchor(getObjectFromName((ObjectTypes)ref_type, ref_object));
     obj->setMu(init.init_mu);
 
     switch (init.type) {
@@ -108,10 +75,13 @@ void SolarSystem::initializeOrbit(int num, ObjectTypes type) {
     obj->initKinematicProcess(Position, Velocity);
 }
 
-Star* SolarSystem::getStarFromName(std::string name) {
-    return starList[std::distance(starMap.begin(), std::find(starMap.begin(), starMap.end(), name))];
-}
-
-Planet* SolarSystem::getPlanetFromName(std::string name) {
-    return planetList[std::distance(planetMap.begin(), std::find(planetMap.begin(), planetMap.end(), name))];
+Object* SolarSystem::getObjectFromName(ObjectTypes type, std::string name) {
+    switch (type) {
+    case STAR:
+        return starList[std::distance(starMap.begin(), std::find(starMap.begin(), starMap.end(), name))];
+    case PLANET:
+        return planetList[(int)(std::distance(planetMap.begin(), std::find(planetMap.begin(), planetMap.end(), name)))];
+    default:
+        return nullptr;
+    }
 }

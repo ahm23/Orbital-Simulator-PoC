@@ -6,6 +6,7 @@
 #include "../celestial/Star.h"
 #include "../celestial/Planet.h"
 #include "../Sattelite.h"
+#include <limits>
 
 template<typename T>
 void dp_destruct(T** dp, int count) {
@@ -40,10 +41,10 @@ public:
     void parseObjects<Planet>(std::vector<Planet*>* list) {
         for (int i = 0; i < count; i++) {
             PlanetConfigPackage planet;
+            std::string line;
             file >> planet.config_obj.name >> planet.config_obj.mass >> planet.config_obj.mu
-                >> planet.config_clst.avg_radius >> planet.config_planet.ecliptic_i;
-            file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                >> planet.config_clst.avg_radius >> planet.config_planet.ecliptic_i >> line;
+            std::getline(file, line, '\n');
             list->push_back(new Planet(planet));
         }
     }
@@ -52,8 +53,8 @@ public:
         for (int i = 0; i < count; i++) {
             SatteliteConfigPackage sattelite;
             file >> sattelite.config_obj.name >> sattelite.config_obj.mass >> sattelite.config_obj.mu;
-            file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::string line; std::getline(file, line, '\n');
+            std::getline(file, line, '\n');
             list->push_back(new Sattelite(sattelite));
         }
     }
@@ -62,7 +63,7 @@ public:
     OrbitInit parseOrbit(int num, Planet* planet, std::string* ref) {
         //std::cout << num << endl;
         for (int i = 0; i <= 2 * num - 1; ++i) {
-            file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::string line; std::getline(file, line, '\n');
         }
         OrbitInit init;
         file >> init.type;

@@ -8,7 +8,7 @@
 #include <chrono>
 
 #include "mechanics/Orbit.h"
-#include "mechanics/Kinetics.h"
+#include "mechanics/Kinematics.h"
 
 enum ObjectTypes {
 	STAR,
@@ -27,11 +27,11 @@ struct ObjectConfig {
 
 class Object {
 public:
-	std::condition_variable kinetic_cv;
-	std::mutex kinetic_m;
+	std::condition_variable kinematic_cv;
+	std::mutex kinematic_m;
 
 	Orbit orbit;
-	Kinetic kinetics;
+	Kinematic kinematics;
 	
 	Object(ObjectConfig config);
 	~Object();
@@ -43,16 +43,17 @@ public:
 		//tmp function
 		config_obj.mu = mu;
 	}
+	void setKinematicAnchor(Object* anchor) { kinematics.anchor = anchor; }
 
-	void initKineticProcess(Eigen::Vector3d position, Eigen::Vector3d velocity);
+	void initKinematicProcess(Eigen::Vector3d position, Eigen::Vector3d velocity);
 	unsigned long time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
 protected:
 	static long update_freq;
-	bool toggle_kinetic = false;
+	bool toggle_kinematic = false;
 
 	ObjectConfig config_obj;
 
-	void kineticProcess();
+	void kinematicProcess();
 };
 

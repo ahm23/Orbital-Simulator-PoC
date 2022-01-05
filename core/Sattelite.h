@@ -4,7 +4,7 @@
 #include <math.h>
 #include <Eigen/Dense>
 #include "mechanics/Orbit.h"
-#include "mechanics/Kinetics.h"
+#include "mechanics/Kinematics.h"
 #include "Object.h"
 #include <condition_variable>
 

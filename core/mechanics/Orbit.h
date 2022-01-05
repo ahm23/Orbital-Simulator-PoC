@@ -96,8 +96,8 @@ private:
 
 		std::cout << *v << std::endl;
 		/*
-		std::lock_guard<std::mutex> lk(kinetic_m);
+		std::lock_guard<std::mutex> lk(kinematic_m);
 		init = true;
-		kinetic_cv.notify_one();*/
+		kinematic_cv.notify_one();*/
 	}
 };

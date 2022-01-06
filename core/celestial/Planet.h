@@ -4,7 +4,6 @@
 #include <math.h>
 #include <Eigen/Dense>
 #include "../mechanics/Orbit.h"
-#include "../mechanics/Kinematics.h"
 #include "CelestialBody.h"
 #include <condition_variable>
 

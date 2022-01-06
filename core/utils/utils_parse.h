@@ -26,36 +26,42 @@ public:
 
     int getCount() { return count; }
 
-    template<typename T>
+    template<typename T, typename X>
     void parseObjects(std::vector<T*>* var) { std::cout << "Unknown Object Type!"; }
     template<>
-    void parseObjects<Star>(std::vector<Star*>* list) {
+    void parseObjects<Element, Star>(std::vector <Element*>* list) {
         for (int i = 0; i < count; i++) {
             StarConfigPackage star{};
             file >> star.config_obj.name >> star.config_obj.mass >> star.config_obj.mu
                 >> star.config_clst.avg_radius >> star.config_star.temperature;
-            list->push_back(new Star(star));
+            Element* el = new Element;
+            el->obj = new Star(star);
+            list->push_back(el);
         }
     }
     template<>
-    void parseObjects<Planet>(std::vector<Planet*>* list) {
+    void parseObjects<Element, Planet>(std::vector<Element*>* list) {
         for (int i = 0; i < count; i++) {
             PlanetConfigPackage planet;
             std::string line;
             file >> planet.config_obj.name >> planet.config_obj.mass >> planet.config_obj.mu
                 >> planet.config_clst.avg_radius >> planet.config_planet.ecliptic_i >> line;
             std::getline(file, line, '\n');
-            list->push_back(new Planet(planet));
+            Element* el = new Element;
+            el->obj = new Planet(planet);
+            list->push_back(el);
         }
     }
     template<>
-    void parseObjects<Sattelite>(std::vector<Sattelite*>* list) {
+    void parseObjects<Element, Sattelite>(std::vector<Element*>* list) {
         for (int i = 0; i < count; i++) {
             SatteliteConfigPackage sattelite;
             file >> sattelite.config_obj.name >> sattelite.config_obj.mass >> sattelite.config_obj.mu;
             std::string line; std::getline(file, line, '\n');
             std::getline(file, line, '\n');
-            list->push_back(new Sattelite(sattelite));
+            Element* el = new Element;
+            el->obj = new Sattelite(sattelite);
+            list->push_back(el);
         }
     }
 
@@ -85,6 +91,8 @@ public:
                 init.coe.raan = init.coe.raan * d2r;
                 init.coe.omega = init.coe.omega * d2r;
                 init.init_ml = init.init_ml * d2r;
+                return init;
+            default:
                 return init;
         }
     }

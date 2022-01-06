@@ -88,13 +88,13 @@ private:
 		position_p << init.init_r * (double)cos(coe.TA), init.init_r * (double)sin(coe.TA), 0;
 		velocity_p << -sqrt(init.init_mu/ (coe.a * (1 - pow(coe.e, 2))))*sin(coe.TA), sqrt(init.init_mu / (coe.a * (1 - pow(coe.e, 2))))*(coe.e+cos(coe.TA)), 0;
 
-		std::cout << "INIT FOR " << init.init_ml << std::endl;
-		std::cout << position_p << std::endl;
+		//std::cout << "INIT FOR " << init.init_ml << std::endl;
+		//std::cout << position_p << std::endl;
 
 		*p = ROTATION * position_p;
 		*v = ROTATION * velocity_p;
 
-		std::cout << *v << std::endl;
+		//std::cout << *v << std::endl;
 		/*
 		std::lock_guard<std::mutex> lk(kinematic_m);
 		init = true;

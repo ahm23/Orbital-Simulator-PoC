@@ -6,6 +6,8 @@ struct CelestialConfig {
 	//TODO: composition
 };
 
+class CelestialBody;
+
 class CelestialBody : public Object {
 public:
 	CelestialBody(ObjectConfig config_obj, CelestialConfig config_clst);

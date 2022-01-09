@@ -12,6 +12,7 @@
 
 #include <shared_mutex>
 
+#include "KinematicEngine.h"
 
 
 class SolarSystem {
@@ -22,6 +23,8 @@ public:
 	std::vector<Element*> starList;
 	std::vector<Element*> planetList;
 
+	std::vector<Element*> elements;
+
 	SolarSystem();
 
 	Object* getObjectFromName(ObjectTypes type, std::string name);
@@ -31,13 +34,15 @@ public:
 
 	static long update_freq;
 	bool toggle_kinematic = false;
-	std::condition_variable_any kinematic_cv;
-	std::shared_mutex kinematic_m;
+	std::condition_variable kinematic_cv;
+	std::mutex kinematic_m;
 
 private:
 	std::vector<Element*> loadStars();
 	std::vector<Element*> loadPlanets();
 	std::vector<Element*> loadSattelites();
+
+	KinematicEngine* ke;
 
 	//void initializePlanetaryOrbit(int num);
 	void initializeMechanics(int num, ObjectTypes type);

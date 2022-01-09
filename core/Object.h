@@ -30,6 +30,7 @@ struct ObjectConfig {
 };
 
 class Object {
+
 public:
 	std::condition_variable kinematic_cv;
 	std::mutex kinematic_m;
@@ -38,7 +39,7 @@ public:
 	//Kinematic kinematics;
 	
 	Object(ObjectConfig config);
-	~Object();
+	~Object() {}
 
 	std::string getName() { return config_obj.name; }
 	double getMass() { return config_obj.mass; }

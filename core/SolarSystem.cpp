@@ -4,6 +4,9 @@ long SolarSystem::update_freq = 1000;
 
 SolarSystem::SolarSystem()
 {
+    ke = new KinematicEngine(&elements, 4);
+
+
 	starList = loadStars();
     planetList = loadPlanets();
 

@@ -25,6 +25,9 @@ class Planet: public CelestialBody {
 public:
 	Planet(PlanetConfigPackage config);
 	~Planet();
+
+	//Planet& operator=(const Planet& rhs) {};
+
 private:
 	PlanetConfig config_planet;
 };

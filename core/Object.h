@@ -22,7 +22,9 @@ enum ObjectTypes {
 static const char* filenames[] = { "Stars.dat", "Planets.dat" };
 
 struct ObjectConfig {
+	int id;
 	std::string name = "N/A";
+	ObjectTypes type;
 	double mass = 0;
 	double mu = 0;
 };
@@ -40,6 +42,8 @@ public:
 
 	std::string getName() { return config_obj.name; }
 	double getMass() { return config_obj.mass; }
+	ObjectTypes getType() { return config_obj.type;  }
+	int getID() { return config_obj.id; }
 
 	void setMu(double mu) {
 		//tmp function
@@ -53,6 +57,7 @@ public:
 protected:
 
 	ObjectConfig config_obj;
+	std::unordered_map<int, std::string> depthMap = { {0, "Barycentre"} };
 
 	//void kinematicProcess();
 };

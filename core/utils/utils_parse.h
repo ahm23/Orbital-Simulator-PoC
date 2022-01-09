@@ -31,7 +31,8 @@ public:
     template<>
     void parseObjects<Element, Star>(std::vector <Element*>* list) {
         for (int i = 0; i < count; i++) {
-            StarConfigPackage star{};
+            StarConfigPackage star;
+            star.config_obj.type = ObjectTypes::STAR;
             file >> star.config_obj.name >> star.config_obj.mass >> star.config_obj.mu
                 >> star.config_clst.avg_radius >> star.config_star.temperature;
             Element* el = new Element;
@@ -44,6 +45,8 @@ public:
         for (int i = 0; i < count; i++) {
             PlanetConfigPackage planet;
             std::string line;
+            planet.config_obj.id = i;
+            planet.config_obj.type = ObjectTypes::PLANET;
             file >> planet.config_obj.name >> planet.config_obj.mass >> planet.config_obj.mu
                 >> planet.config_clst.avg_radius >> planet.config_planet.ecliptic_i >> line;
             std::getline(file, line, '\n');
@@ -56,6 +59,7 @@ public:
     void parseObjects<Element, Sattelite>(std::vector<Element*>* list) {
         for (int i = 0; i < count; i++) {
             SatteliteConfigPackage sattelite;
+            sattelite.config_obj.type = ObjectTypes::SATTELITE;
             file >> sattelite.config_obj.name >> sattelite.config_obj.mass >> sattelite.config_obj.mu;
             std::string line; std::getline(file, line, '\n');
             std::getline(file, line, '\n');

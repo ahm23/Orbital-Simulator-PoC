@@ -52,10 +52,19 @@ public:
 	}
 	//void setKinematicAnchor(Object* anchor) { kinematics.anchor = anchor; }
 
+	Eigen::Vector3d getPos() { return p; }
+	Eigen::Vector3d getVel() { return v; }
+	Eigen::Vector3d getAcl() { return a; }
+
 	//void initKinematicProcess(Eigen::Vector3d position, Eigen::Vector3d velocity);
 	long time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
 protected:
+	Eigen::Vector3d p;
+	Eigen::Vector3d v;
+	Eigen::Vector3d a;
+	
+	Eigen::Matrix3d ROTATION;
 
 	ObjectConfig config_obj;
 	std::unordered_map<int, std::string> depthMap = { {0, "Barycentre"} };

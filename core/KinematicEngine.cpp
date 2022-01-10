@@ -35,7 +35,7 @@ void KinematicEngine::ComputeWorker() {
 		Eigen::Vector3d p_calc;
 
 		for (int i = 0; i < el->perturbers.size(); i++) {
-			p_calc = getVectorBetweenObjects(el, (*el_ptr)[el->perturbers[i]->getID()]);
+			p_calc = getVectorBetweenObject(el, (*el_ptr)[el->perturbers[i]->getID()]);
 			//a_calc += (calculate_mu(obj->getMass(), system->starList[i]->obj->getMass()) / pow(p.norm(), 3)) * p;
 		}
 	}

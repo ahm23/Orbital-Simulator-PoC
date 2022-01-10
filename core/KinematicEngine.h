@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "Element.h"
+#include "utils/utils_planetary.h"
 
 class KinematicEngine {
 public:
@@ -12,12 +13,19 @@ public:
 
 
 private:
-	std::vector<Element*>* el_pointer;
+	std::vector<Element*>* el_ptr;
 	int maxThreads = 0;
-	void ComputeProcess();
+	void ComputeWorker();
+
+	bool q_busy = false;
+	std::vector<Element*> queue;
+	
 
 	// Engine toggle for pause/resume.
 	bool toggle = false;
+
+
+	void ComputePerturbations();
 
 };
 

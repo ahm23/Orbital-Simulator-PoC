@@ -17,11 +17,14 @@
 
 class SolarSystem {
 public:
-	std::vector<std::string> starMap;
-	std::vector<std::string> planetMap;
+	std::unordered_map<std::string, int> starMap;
+	std::unordered_map<std::string, int> planetMap;
 
-	std::vector<Element*> starList;
-	std::vector<Element*> planetList;
+	std::vector<int> iBuffer_star;
+	std::vector<int> iBuffer_planet;
+	std::vector<int> fBuffer_star;
+	std::vector<int> fBuffer_planet;
+
 
 	std::vector<Element*> elements;
 
@@ -34,8 +37,8 @@ public:
 
 	static long update_freq;
 	bool toggle_kinematic = false;
-	std::condition_variable kinematic_cv;
-	std::mutex kinematic_m;
+	std::condition_variable_any kinematic_cv;
+	std::shared_mutex kinematic_m;
 
 private:
 	std::vector<Element*> loadStars();
@@ -45,7 +48,7 @@ private:
 	KinematicEngine* ke;
 
 	//void initializePlanetaryOrbit(int num);
-	void initializeMechanics(int num, ObjectTypes type);
+	void initializeMechanics(int, int num, ObjectTypes type);
 	void start();
 	//void initializeOrbit(OrbitInit init, Orbit* orbit, Eigen::Vector3d* Position, Eigen::Vector3d* Velocity);
 };

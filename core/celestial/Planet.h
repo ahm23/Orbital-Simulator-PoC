@@ -12,7 +12,7 @@ using namespace std::chrono;
 using namespace Eigen;
 
 struct PlanetConfig {
-	float ecliptic_i = 0;
+	
 };
 
 struct PlanetConfigPackage {

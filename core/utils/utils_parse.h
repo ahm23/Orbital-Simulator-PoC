@@ -27,11 +27,12 @@ public:
     int getCount() { return count; }
 
     template<typename T, typename X>
-    void parseObjects(std::vector<T*>* var) { std::cout << "Unknown Object Type!"; }
+    int parseObjects(std::vector<T*>* var) { std::cout << "Unknown Object Type!"; return count;}
     template<>
-    void parseObjects<Element, Star>(std::vector <Element*>* list) {
+    int parseObjects<Element, Star>(std::vector <Element*>* list) {
         for (int i = 0; i < count; i++) {
             StarConfigPackage star;
+            star.config_obj.id = (int)list->size();
             star.config_obj.type = ObjectTypes::STAR;
             file >> star.config_obj.name >> star.config_obj.mass >> star.config_obj.mu
                 >> star.config_clst.avg_radius >> star.config_star.temperature;
@@ -39,26 +40,29 @@ public:
             el->obj = new Star(star);
             list->push_back(el);
         }
+        return count;
     }
     template<>
-    void parseObjects<Element, Planet>(std::vector<Element*>* list) {
+    int parseObjects<Element, Planet>(std::vector<Element*>* list) {
         for (int i = 0; i < count; i++) {
             PlanetConfigPackage planet;
             std::string line;
-            planet.config_obj.id = i;
+            planet.config_obj.id = (int)list->size();
             planet.config_obj.type = ObjectTypes::PLANET;
             file >> planet.config_obj.name >> planet.config_obj.mass >> planet.config_obj.mu
-                >> planet.config_clst.avg_radius >> planet.config_planet.ecliptic_i >> line;
+                >> planet.config_clst.avg_radius >> planet.config_clst.ecliptic_i >> line;
             std::getline(file, line, '\n');
             Element* el = new Element;
             el->obj = new Planet(planet);
             list->push_back(el);
         }
+        return count;
     }
     template<>
-    void parseObjects<Element, Sattelite>(std::vector<Element*>* list) {
+    int parseObjects<Element, Sattelite>(std::vector<Element*>* list) {
         for (int i = 0; i < count; i++) {
             SatteliteConfigPackage sattelite;
+            sattelite.config_obj.id = (int)list->size();
             sattelite.config_obj.type = ObjectTypes::SATTELITE;
             file >> sattelite.config_obj.name >> sattelite.config_obj.mass >> sattelite.config_obj.mu;
             std::string line; std::getline(file, line, '\n');
@@ -67,12 +71,13 @@ public:
             el->obj = new Sattelite(sattelite);
             list->push_back(el);
         }
+        return count;
     }
 
 
     OrbitInit parseOrbit(int num, Object* planet, int* ref_t, std::string* ref_o) {
         //std::cout << num << endl;
-        for (int i = 0; i <= 2 * num - 1; ++i) {
+        for (int i = 0; i <= 2 * num + 1; ++i) {
             std::string line; std::getline(file, line, '\n');
         }
         OrbitInit init;

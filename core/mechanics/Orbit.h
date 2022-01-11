@@ -60,6 +60,8 @@ public:
 		initOrbitCOE(init, p, v);
 	}
 
+	Matrix3d getRotation() { return ROTATION; }
+
 	bool getInitStatus() {
 		return init;
 	}
@@ -67,15 +69,20 @@ public:
 private:
 	bool init = false;
 
+	Matrix3d ROTATION;
+
 	void initOrbitCOE(OrbitInit init, Vector3d* p, Vector3d* v) {
 		coe = init.coe;
 		init.init_mu = 1.326 * pow(10, 11);
 
-		Matrix3d ROTATION {
+		Matrix3d ROTATION_tmp {
 			{cos(coe.raan) * cos(coe.omega) - sin(coe.raan) * cos(coe.i) * sin(coe.omega), -cos(coe.raan) * sin(coe.omega) - sin(coe.raan) * cos(coe.i) * cos(coe.omega), sin(coe.raan) * sin(coe.i)},
 			{sin(coe.raan) * cos(coe.omega) + cos(coe.raan) * cos(coe.i) * sin(coe.omega), -sin(coe.raan) * sin(coe.omega) + cos(coe.raan) * cos(coe.i) * cos(coe.omega), -cos(coe.raan) * sin(coe.i)},
 			{sin(coe.i) * sin(coe.omega), sin(coe.i) * cos(coe.omega), cos(coe.i)}
 		};
+
+		ROTATION = ROTATION_tmp;
+
 		Vector3d position_p;
 		Vector3d velocity_p;
 

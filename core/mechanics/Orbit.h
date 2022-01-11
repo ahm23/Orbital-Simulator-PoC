@@ -4,7 +4,6 @@
 #include <iomanip>
 #include <condition_variable>
 #include <Eigen/Dense>
-#include <Windows.h>
 #include "../utils/utils_math.h"
 
 using namespace Eigen;

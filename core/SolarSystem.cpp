@@ -4,7 +4,7 @@ long SolarSystem::update_freq = 1000;
 
 SolarSystem::SolarSystem()
 {
-    ke = new KinematicEngine(&elements, 4);
+    ke = new KinematicEngine(&elements, 4, &kinematic_m, &kinematic_cv);
 
 
 	starList = loadStars();
@@ -23,7 +23,7 @@ SolarSystem::SolarSystem()
 
     mapSystem();
 
-    std::lock_guard<shared_mutex> lk(kinematic_m);
+    std::lock_guard<std::mutex> lk(kinematic_m);
     toggle_kinematic = true;
     kinematic_cv.notify_all();
 }
@@ -33,7 +33,6 @@ std::vector<Element*> SolarSystem::loadStars() {
     std::vector<Element*> starList;
     parser.parseObjects<Element, Star>(&starList);
     for (int i = 0; i < starList.size(); i++) {
-        starList[i]->kinematic = new Kinematics(this, starList[i]->obj);
         starMap.push_back(starList[i]->obj->getName());
     }
     return starList;
@@ -44,7 +43,6 @@ std::vector<Element*> SolarSystem::loadPlanets() {
     std::vector<Element*> planetList;
     parser.parseObjects<Element, Planet>(&planetList);
     for (int i = 0; i < planetList.size(); i++) {
-        planetList[i]->kinematic = new Kinematics(this, planetList[i]->obj);
         planetMap.push_back(planetList[i]->obj->getName());
     }
     return planetList;
@@ -78,11 +76,11 @@ void SolarSystem::initializeMechanics(int num, ObjectTypes type) {
     OrbitInit init = parser.parseOrbit(num, el->obj, &ref_type, &ref_object);
     if (ref_type == ObjectTypes::BARYCENTRE) {
         init.init_mu = 0;
-        el->kinematic->setKinematicAnchor(NULL);
+        el->anchor = NULL;
     }
     else {
-        el->kinematic->setKinematicAnchor(getObjectFromName((ObjectTypes)ref_type, ref_object));
-        init.init_mu = calculate_mu(el->obj->getMass(), el->kinematic->getKinematicAnchor()->getMass());        // Reason to put kinematic anchor in Object class. TODO!
+        el->anchor = getObjectFromName((ObjectTypes)ref_type, ref_object);
+        init.init_mu = calculate_mu(el->obj->getMass(), el->anchor->getMass());
     }
 
     el->obj->setMu(init.init_mu);
@@ -100,14 +98,14 @@ void SolarSystem::initializeMechanics(int num, ObjectTypes type) {
             el->obj->orbit.initOrbitCOE_ML(init, &Position, &Velocity);
             break;
     }
+    /*
     if (el->kinematic->initKinematicProcess(Position, Velocity)) {
         std::cout << "\033[0;32;49mSUCCESS: Initialized Kinematic Process for Object: " << el->obj->getName() << "\033[0m" << std::endl;
     }
     else {
         std::cout << "WARN: Attempt to Initialize Kinematic Process Failed for Object: " << el->obj->getName() << std::endl;
         std::cout << "Reason | Kinematic Process Already Initialized" << std::endl;
-    }
-  
+    }*/ 
 }
 
 
@@ -120,7 +118,7 @@ void SolarSystem::mapSystem() {
         while (iterator > -1) {
             el->depth_map[iterator] = el_tmp->obj;
             el->depth_map_reverse[el_tmp->obj] = iterator;
-            next_anchor = el_tmp->kinematic->getKinematicAnchor();
+            next_anchor = el_tmp->anchor;      /// FIX!!!!!!!
             if (!next_anchor || next_anchor == nullptr)
                 break;
             el_tmp = getElementFromName(next_anchor->getType(), next_anchor->getName());
@@ -154,46 +152,4 @@ Element* SolarSystem::getElementFromName(ObjectTypes type, std::string name) {
     default:
         return nullptr;
     }
-}
-
-
-Eigen::Vector3d SolarSystem::getVectorBetweenObjects(Element* o1, Element* o2) {
-   /* std::unordered_map<int, Object*>* map_long;
-    std::unordered_map<int, Object*>* map_short;
-    
-
-    if (o2->depth_map.size() > o1->depth_map.size()) {
-        map_long = &o2->depth_map;
-        map_short = &o1->depth_map;
-    }
-    else {
-        map_long = &o1->depth_map;
-        map_short = &o2->depth_map;
-    }
-    */
-    //std::unordered_map<Object*, Eigen::Vector3d> map1;
-    int max_len = (std::max)(o1->depth_map.size(), o2->depth_map.size());
-
-    Eigen::Vector3d pos1;
-    Eigen::Vector3d pos2;
-    pos1 << 0, 0, 0;
-    pos2 << 0, 0, 0;
-
-    for (int i = 0; i < max_len; i++) {
-        if (o1->depth_map_reverse.find(o2->depth_map[i]) != o1->depth_map_reverse.end())
-            for (int j = 0; j < o1->depth_map.size(); j++) {
-                if (o1->depth_map[j] == o2->obj)
-                    return pos1;
-                pos1 += getElementFromName(o1->depth_map[j]->getType(), o1->depth_map[j]->getName())->kinematic->p;
-            }
-        if (o2->depth_map_reverse.find(o1->depth_map[i]) != o2->depth_map_reverse.end())
-            for (int j = 0; j < o2->depth_map.size(); j++) {
-                if (o2->depth_map[j] == o1->obj)
-                    return pos1;
-                pos1 += getElementFromName(o2->depth_map[j]->getType(), o2->depth_map[j]->getName())->kinematic->p;
-            }
-        //map1[o1->kinematic->getKinematicAnchor()] = o1->kinematic->p;
-        //map2[o2->kinematic->getKinematicAnchor()] = o2->kinematic->p;
-    }
-    return pos1;
 }

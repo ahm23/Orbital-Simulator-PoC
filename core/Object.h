@@ -39,7 +39,7 @@ public:
 	//Kinematic kinematics;
 	
 	Object(ObjectConfig config);
-	~Object() {}
+	~Object();
 
 	std::string getName() { return config_obj.name; }
 	double getMass() { return config_obj.mass; }
@@ -57,7 +57,7 @@ public:
 	Eigen::Vector3d getAcl() { return a; }
 
 	//void initKinematicProcess(Eigen::Vector3d position, Eigen::Vector3d velocity);
-	long time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+	long time = (long)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
 protected:
 	Eigen::Vector3d p;

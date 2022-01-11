@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <condition_variable>
 #include "Element.h"
 #include "utils/utils_planetary.h"
 
@@ -8,9 +9,6 @@ public:
 	KinematicEngine(std::vector<Element*>*, int, std::mutex*, std::condition_variable*);
 	void run(std::mutex*, std::condition_variable*);
 	~KinematicEngine();
-
-
-
 
 private:
 	std::vector<Element*>* el_ptr;

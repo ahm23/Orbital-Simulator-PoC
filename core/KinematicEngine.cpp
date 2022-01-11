@@ -10,7 +10,7 @@ void KinematicEngine::run(std::mutex* m, std::condition_variable* cv) {
 	while (true) {
 		// Engine Toggle Check
 		if (!toggle) {
-			std::unique_lock<mutex> lk(*m);
+			std::unique_lock<std::mutex> lk(*m);
 			cv->wait(lk, [&] {return toggle; });
 		}
 		// Create element update queue for threaded workers

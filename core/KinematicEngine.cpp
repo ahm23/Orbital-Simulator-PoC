@@ -28,7 +28,10 @@ void KinematicEngine::ComputeWorker(std::shared_mutex* m, std::condition_variabl
 		// Engine Toggle Check
 		if (!toggle) {
 			std::shared_lock<std::shared_mutex> lk(*m);
-			cv->wait(lk, [&] { toggle = !toggle;  return toggle; });
+			cv->wait(lk, [&] { if (!toggle) toggle = !toggle;  return toggle; });
+		}
+		if (queue.empty()) {
+			queue = *el_ptr;
 		}
 		while (!queue.empty()) {
 			if (q_busy)
@@ -52,12 +55,18 @@ void KinematicEngine::ComputeWorker(std::shared_mutex* m, std::condition_variabl
 			}*/
 
 			for (int i = 0; i < el_ptr->size(); i++) {
+				if (el == (*el_ptr)[i])
+					continue;
 				p_calc = getVectorBetweenObject(el, (*el_ptr)[i]);
+				if ((*el_ptr)[i]->obj->getName() == "Mars" && el->obj->getName() == "Earth") {
+					system("cls");
+					std::cout << p_calc << std::endl;
+				}
 				//a_calc += (calculate_mu(obj->getMass(), system->starList[i]->obj->getMass()) / pow(p.norm(), 3)) * p;
 			}
 		}
+		//std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
-		return;
 }
 
 void KinematicEngine::ComputePerturbations() {

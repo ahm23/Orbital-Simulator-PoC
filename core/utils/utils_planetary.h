@@ -23,12 +23,14 @@ static Eigen::Vector3d getVectorBetweenObject(Element* o1, Element* o2) {
     pos2 << 0, 0, 0;
 
     for (int i = 0; i < max_len; i++) {
+        if (o1->obj->getName() == "Earth" && o2->depth_map[i]->getName() == "Sun")
+            std::cout << std::endl;
         if (o1->depth_map_reverse.find(o2->depth_map[i]) != o1->depth_map_reverse.end()) {
             //found o2 @ i in o1
             //std::cout << "Found Connection @ " << o2->depth_map[i]->getName() << std::endl;
-            for (int j = i; j <= o1->depth_map_reverse[o2->depth_map[i]]; j++) {
+            for (int j = i; j < o1->depth_map_reverse[o2->depth_map[i]]; j++) {
                 pos1 = generateEclipticRotation(o1->depth_map[j]->getEcliptic()) * o1->depth_map[j]->orbit.getRotation() * pos1 + o1->depth_map[j]->getPos();
-                if (o1->depth_map[j] == o2->depth_map[i])
+                if (o1->depth_map[j + 1] == o2->depth_map[i])
                     return pos1 - pos2;
                 //pos1 += getElementFromName(o1->depth_map[j]->getType(), o1->depth_map[j]->getName())->kinematic->p;
             }
@@ -36,9 +38,9 @@ static Eigen::Vector3d getVectorBetweenObject(Element* o1, Element* o2) {
         else if (o2->depth_map_reverse.find(o1->depth_map[i]) != o2->depth_map_reverse.end()) {
             //found o1 @ i in o2
             //std::cout << "Found Connection @ " << o2->depth_map[i]->getName() << std::endl;
-            for (int j = 0; j < o2->depth_map.size(); j++) {
+            for (int j = 0; j < o2->depth_map_reverse[o1->depth_map[i]]; j++) {
                 pos2 = generateEclipticRotation(o2->depth_map[j]->getEcliptic()) * o2->depth_map[j]->orbit.getRotation() * pos2 + o2->depth_map[j]->getPos();
-                if (o2->depth_map[j] == o1->depth_map[i])
+                if (o2->depth_map[j + 1] == o1->depth_map[i])
                     return pos1 - pos2;
             }
         }

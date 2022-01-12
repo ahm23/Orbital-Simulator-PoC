@@ -55,6 +55,9 @@ public:
 	Eigen::Vector3d getPos() { return p; }
 	Eigen::Vector3d getVel() { return v; }
 	Eigen::Vector3d getAcl() { return a; }
+	void setPos(Eigen::Vector3d p) { this->p = p; }
+	void setVel(Eigen::Vector3d v) { this->v = v; }
+	void setAcl(Eigen::Vector3d a) { this->a = a; }
 
 	//void initKinematicProcess(Eigen::Vector3d position, Eigen::Vector3d velocity);
 	long time = (long)std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();

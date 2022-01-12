@@ -7,7 +7,6 @@ SolarSystem::SolarSystem() {
 	loadStars();
     loadPlanets();
 
-
     for (int i = 0; i < iBuffer_star.size(); i++) {
         //initializePlanetaryOrbit(i + 1);
         initializeMechanics(i, iBuffer_star[i], STAR);
@@ -100,6 +99,8 @@ void SolarSystem::initializeMechanics(int index, int num, ObjectTypes type) {
             el->obj->orbit.initOrbitCOE_ML(init, &Position, &Velocity);
             break;
     }
+    el->obj->setPos(Position);
+    el->obj->setVel(Velocity);
     /*
     if (el->kinematic->initKinematicProcess(Position, Velocity)) {
         std::cout << "\033[0;32;49mSUCCESS: Initialized Kinematic Process for Object: " << el->obj->getName() << "\033[0m" << std::endl;

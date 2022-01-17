@@ -58,7 +58,7 @@ void KinematicEngine::ComputeWorker(std::shared_mutex* m, std::condition_variabl
 				if (el == (*el_ptr)[i])
 					continue;
 				p_calc = getVectorBetweenObject(el, (*el_ptr)[i]);
-				if ((*el_ptr)[i]->obj->getName() == "Mars" && el->obj->getName() == "Earth") {
+				if ((*el_ptr)[i]->obj->getName() == "Moon" && el->obj->getName() == "Mars") {
 					system("cls");
 					std::cout << p_calc << std::endl;
 				}

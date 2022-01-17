@@ -5,6 +5,7 @@
 
 #include "../celestial/Star.h"
 #include "../celestial/Planet.h"
+#include "../celestial/Moon.h"
 #include "../Sattelite.h"
 #include <limits>
 
@@ -54,6 +55,22 @@ public:
             std::getline(file, line, '\n');
             Element* el = new Element;
             el->obj = new Planet(planet);
+            list->push_back(el);
+        }
+        return count;
+    }
+    template<>
+    int parseObjects<Element, Moon>(std::vector<Element*>* list) {
+        for (int i = 0; i < count; i++) {
+            MoonConfigPackage moon;
+            std::string line;
+            moon.config_obj.id = (int)list->size();
+            moon.config_obj.type = ObjectTypes::PLANET;
+            file >> moon.config_obj.name >> moon.config_obj.mass >> moon.config_obj.mu
+                >> moon.config_clst.avg_radius >> moon.config_clst.ecliptic_i >> line;
+            std::getline(file, line, '\n');
+            Element* el = new Element;
+            el->obj = new Moon(moon);
             list->push_back(el);
         }
         return count;

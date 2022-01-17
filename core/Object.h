@@ -19,7 +19,7 @@ enum ObjectTypes {
 	SATTELITE = 6
 };
 
-static const char* filenames[] = { "Stars.dat", "Planets.dat" };
+static const char* filenames[] = { "Stars.dat", "Planets.dat", "Moons.dat" };
 
 struct ObjectConfig {
 	int id;

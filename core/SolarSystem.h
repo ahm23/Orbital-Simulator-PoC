@@ -19,9 +19,11 @@ class SolarSystem {
 public:
 	std::unordered_map<std::string, int> starMap;
 	std::unordered_map<std::string, int> planetMap;
+	std::unordered_map<std::string, int> moonMap;
 
 	std::vector<int> iBuffer_star;
 	std::vector<int> iBuffer_planet;
+	std::vector<int> iBuffer_moon;
 	std::vector<int> fBuffer_star;
 	std::vector<int> fBuffer_planet;
 
@@ -43,6 +45,7 @@ public:
 private:
 	std::vector<Element*> loadStars();
 	std::vector<Element*> loadPlanets();
+	std::vector<Element*> loadMoons();
 	std::vector<Element*> loadSattelites();
 
 	KinematicEngine* ke;

@@ -1,4 +1,5 @@
 #include "SolarSystem.h"
+#include "celestial/Moon.h"
 
 long SolarSystem::update_freq = 1000;
 
@@ -6,6 +7,7 @@ SolarSystem::SolarSystem() {
 
 	loadStars();
     loadPlanets();
+    loadMoons();
 
     for (int i = 0; i < iBuffer_star.size(); i++) {
         //initializePlanetaryOrbit(i + 1);
@@ -15,6 +17,11 @@ SolarSystem::SolarSystem() {
     for (int i = 0; i < iBuffer_planet.size(); i++) {
         //initializePlanetaryOrbit(i + 1);
         initializeMechanics(i, iBuffer_planet[i], PLANET);
+    }
+
+    for (int i = 0; i < iBuffer_moon.size(); i++) {
+        //initializePlanetaryOrbit(i + 1);
+        initializeMechanics(i, iBuffer_moon[i], MOON);
     }
 
     mapSystem();
@@ -49,6 +56,18 @@ std::vector<Element*> SolarSystem::loadPlanets() {
     return planetList;
 }
 
+std::vector<Element*> SolarSystem::loadMoons() {
+    FileParser parser("C:\\Users\\netagive\\Desktop\\Orbital\\core\\Moons.dat");
+    std::vector<Element*> moonList;
+    int start = (int)elements.size();
+    int count = parser.parseObjects<Element, Moon>(&elements);
+    for (int i = start; i < start + count; i++) {
+        iBuffer_moon.push_back(i);
+        moonMap[elements[i]->obj->getName()] = elements[i]->obj->getID();
+    }
+    return moonList;
+}
+
 std::vector<Element*> SolarSystem::loadSattelites() {
     FileParser parser("C:\\Users\\netagive\\Desktop\\Orbital\\core\\Sattelites.dat");
     std::vector<Element*> satteliteList;
@@ -72,7 +91,8 @@ void SolarSystem::initializeMechanics(int index, int num, ObjectTypes type) {
         el = elements[num];
         break;
     default:
-        return;
+        el = elements[num];
+        break;
     }
     OrbitInit init = parser.parseOrbit(index, el->obj, &ref_type, &ref_object);
     if (ref_type == ObjectTypes::BARYCENTRE) {
@@ -141,6 +161,8 @@ Object* SolarSystem::getObjectFromName(ObjectTypes type, std::string name) {
         return elements[starMap[name]]->obj;
     case PLANET:
         return elements[planetMap[name]]->obj;
+    case MOON:
+        return elements[moonMap[name]]->obj;
     default:
         return nullptr;
     }
@@ -152,6 +174,8 @@ Element* SolarSystem::getElementFromName(ObjectTypes type, std::string name) {
         return elements[starMap[name]];
     case PLANET:
         return elements[planetMap[name]];
+    case MOON:
+        return elements[moonMap[name]];
     default:
         return nullptr;
     }

@@ -1,3 +1,4 @@
+#pragma once
 #include "Planet.h"
 
 Planet::Planet(PlanetConfigPackage config) : CelestialBody{ config.config_obj, config.config_clst } {};

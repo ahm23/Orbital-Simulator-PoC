@@ -11,7 +11,7 @@ using namespace std::chrono;
 using namespace Eigen;
 
 struct MoonConfig {
-	float ecliptic_i = 0;
+
 };
 
 struct MoonConfigPackage {

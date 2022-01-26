@@ -225,5 +225,7 @@ int initGUI() {
 		GL(glfwPollEvents());
 
 	} while (!glfwWindowShouldClose(window));
+
+	return 0;
 }
 

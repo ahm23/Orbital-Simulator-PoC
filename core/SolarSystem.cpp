@@ -1,26 +1,33 @@
 #include "SolarSystem.h"
+#include "celestial/Moon.h"
 
 long SolarSystem::update_freq = 1000;
 
-SolarSystem::SolarSystem()
-{
-	starList = loadStars();
-    planetList = loadPlanets();
+SolarSystem::SolarSystem() {
 
+	loadStars();
+    loadPlanets();
+    loadMoons();
 
-    for (int i = 0; i < starList.size(); i++) {
+    for (int i = 0; i < iBuffer_star.size(); i++) {
         //initializePlanetaryOrbit(i + 1);
-        initializeMechanics(i + 1, STAR);
+        initializeMechanics(i, iBuffer_star[i], STAR);
     }
 
-    for (int i = 0; i < planetList.size(); i++) {
+    for (int i = 0; i < iBuffer_planet.size(); i++) {
         //initializePlanetaryOrbit(i + 1);
-        initializeMechanics(i + 1, PLANET);
+        initializeMechanics(i, iBuffer_planet[i], PLANET);
+    }
+
+    for (int i = 0; i < iBuffer_moon.size(); i++) {
+        //initializePlanetaryOrbit(i + 1);
+        initializeMechanics(i, iBuffer_moon[i], MOON);
     }
 
     mapSystem();
+    ke = new KinematicEngine(&elements, 1, &kinematic_m, &kinematic_cv);
 
-    std::lock_guard<shared_mutex> lk(kinematic_m);
+    std::lock_guard<std::shared_mutex> lk(kinematic_m);
     toggle_kinematic = true;
     kinematic_cv.notify_all();
 }
@@ -28,10 +35,11 @@ SolarSystem::SolarSystem()
 std::vector<Element*> SolarSystem::loadStars() {
     FileParser parser("C:\\Users\\netagive\\Desktop\\Orbital\\core\\Stars.dat");
     std::vector<Element*> starList;
-    parser.parseObjects<Element, Star>(&starList);
-    for (int i = 0; i < starList.size(); i++) {
-        starList[i]->kinematic = new Kinematics(this, starList[i]->obj);
-        starMap.push_back(starList[i]->obj->getName());
+    int start = (int)elements.size();
+    int count = parser.parseObjects<Element, Star>(&elements);
+    for (int i = start; i < count; i++) {
+        iBuffer_star.push_back(i);
+        starMap[elements[i]->obj->getName()] = elements[i]->obj->getID();
     }
     return starList;
 }
@@ -39,22 +47,35 @@ std::vector<Element*> SolarSystem::loadStars() {
 std::vector<Element*> SolarSystem::loadPlanets() {
     FileParser parser("C:\\Users\\netagive\\Desktop\\Orbital\\core\\Planets.dat");
     std::vector<Element*> planetList;
-    parser.parseObjects<Element, Planet>(&planetList);
-    for (int i = 0; i < planetList.size(); i++) {
-        planetList[i]->kinematic = new Kinematics(this, planetList[i]->obj);
-        planetMap.push_back(planetList[i]->obj->getName());
+    int start = (int)elements.size();
+    int count = parser.parseObjects<Element, Planet>(&elements);
+    for (int i = start; i < start + count; i++) {
+        iBuffer_planet.push_back(i);
+        planetMap[elements[i]->obj->getName()] = elements[i]->obj->getID();
     }
     return planetList;
+}
+
+std::vector<Element*> SolarSystem::loadMoons() {
+    FileParser parser("C:\\Users\\netagive\\Desktop\\Orbital\\core\\Moons.dat");
+    std::vector<Element*> moonList;
+    int start = (int)elements.size();
+    int count = parser.parseObjects<Element, Moon>(&elements);
+    for (int i = start; i < start + count; i++) {
+        iBuffer_moon.push_back(i);
+        moonMap[elements[i]->obj->getName()] = elements[i]->obj->getID();
+    }
+    return moonList;
 }
 
 std::vector<Element*> SolarSystem::loadSattelites() {
     FileParser parser("C:\\Users\\netagive\\Desktop\\Orbital\\core\\Sattelites.dat");
     std::vector<Element*> satteliteList;
-    parser.parseObjects<Element, Sattelite>(&satteliteList);
-    return satteliteList;
+    parser.parseObjects<Element, Sattelite>(&elements);
+    return satteliteList;// INCOMPLETE
 }
 
-void SolarSystem::initializeMechanics(int num, ObjectTypes type) {
+void SolarSystem::initializeMechanics(int index, int num, ObjectTypes type) {
     Element* el;
     std::string ref_object;
     Eigen::Vector3d Position, Velocity;
@@ -64,22 +85,23 @@ void SolarSystem::initializeMechanics(int num, ObjectTypes type) {
 
     switch (type) {
     case STAR:
-        el = starList[num - 1];
+        el = elements[num];
         break;
     case PLANET:
-        el = planetList[num - 1];
+        el = elements[num];
         break;
     default:
-        return;
+        el = elements[num];
+        break;
     }
-    OrbitInit init = parser.parseOrbit(num, el->obj, &ref_type, &ref_object);
+    OrbitInit init = parser.parseOrbit(index, el->obj, &ref_type, &ref_object);
     if (ref_type == ObjectTypes::BARYCENTRE) {
         init.init_mu = 0;
-        el->kinematic->setKinematicAnchor(NULL);
+        el->anchor = NULL;
     }
     else {
-        el->kinematic->setKinematicAnchor(getObjectFromName((ObjectTypes)ref_type, ref_object));
-        init.init_mu = calculate_mu(el->obj->getMass(), el->kinematic->getKinematicAnchor()->getMass());        // Reason to put kinematic anchor in Object class. TODO!
+        el->anchor = getObjectFromName((ObjectTypes)ref_type, ref_object);
+        init.init_mu = calculate_mu(el->obj->getMass(), el->anchor->getMass());
     }
 
     el->obj->setMu(init.init_mu);
@@ -97,28 +119,30 @@ void SolarSystem::initializeMechanics(int num, ObjectTypes type) {
             el->obj->orbit.initOrbitCOE_ML(init, &Position, &Velocity);
             break;
     }
+    el->obj->setPos(Position);
+    el->obj->setVel(Velocity);
+    /*
     if (el->kinematic->initKinematicProcess(Position, Velocity)) {
         std::cout << "\033[0;32;49mSUCCESS: Initialized Kinematic Process for Object: " << el->obj->getName() << "\033[0m" << std::endl;
     }
     else {
         std::cout << "WARN: Attempt to Initialize Kinematic Process Failed for Object: " << el->obj->getName() << std::endl;
         std::cout << "Reason | Kinematic Process Already Initialized" << std::endl;
-    }
-  
+    }*/ 
 }
 
 
 void SolarSystem::mapSystem() {
-    for (int i = 0; i < planetList.size(); i++) {
-        Element* el = planetList[i];
+    for (int i = 0; i < elements.size(); i++) {
+        Element* el = elements[i];
         Element* el_tmp = el;
         int iterator = 0;
-        Object* next_anchor;
+        CelestialBody* next_anchor;
         while (iterator > -1) {
-            el->depth_map[iterator] = el_tmp->obj;
-            el->depth_map_reverse[el_tmp->obj] = iterator;
-            next_anchor = el_tmp->kinematic->getKinematicAnchor();
-            if (!next_anchor || next_anchor == nullptr)
+            el->depth_map[iterator] = (CelestialBody*)el_tmp->obj;
+            el->depth_map_reverse[(CelestialBody*)el_tmp->obj] = iterator;
+            next_anchor = (CelestialBody*)el_tmp->anchor;      /// might revert to Objects & cast to clst in utils_planetary
+            if (!next_anchor || next_anchor == NULL)
                 break;
             el_tmp = getElementFromName(next_anchor->getType(), next_anchor->getName());
             iterator++;
@@ -134,9 +158,11 @@ void SolarSystem::start() {
 Object* SolarSystem::getObjectFromName(ObjectTypes type, std::string name) {
     switch (type) {
     case STAR:
-        return starList[std::distance(starMap.begin(), std::find(starMap.begin(), starMap.end(), name))]->obj;
+        return elements[starMap[name]]->obj;
     case PLANET:
-        return planetList[(int)(std::distance(planetMap.begin(), std::find(planetMap.begin(), planetMap.end(), name)))]->obj;
+        return elements[planetMap[name]]->obj;
+    case MOON:
+        return elements[moonMap[name]]->obj;
     default:
         return nullptr;
     }
@@ -145,52 +171,12 @@ Object* SolarSystem::getObjectFromName(ObjectTypes type, std::string name) {
 Element* SolarSystem::getElementFromName(ObjectTypes type, std::string name) {
     switch (type) {
     case STAR:
-        return starList[std::distance(starMap.begin(), std::find(starMap.begin(), starMap.end(), name))];
+        return elements[starMap[name]];
     case PLANET:
-        return planetList[(int)(std::distance(planetMap.begin(), std::find(planetMap.begin(), planetMap.end(), name)))];
+        return elements[planetMap[name]];
+    case MOON:
+        return elements[moonMap[name]];
     default:
         return nullptr;
     }
-}
-
-
-Eigen::Vector3d SolarSystem::getVectorBetweenObjects(Element* o1, Element* o2) {
-   /* std::unordered_map<int, Object*>* map_long;
-    std::unordered_map<int, Object*>* map_short;
-    
-
-    if (o2->depth_map.size() > o1->depth_map.size()) {
-        map_long = &o2->depth_map;
-        map_short = &o1->depth_map;
-    }
-    else {
-        map_long = &o1->depth_map;
-        map_short = &o2->depth_map;
-    }
-    */
-    //std::unordered_map<Object*, Eigen::Vector3d> map1;
-    int max_len = (std::max)(o1->depth_map.size(), o2->depth_map.size());
-
-    Eigen::Vector3d pos1;
-    Eigen::Vector3d pos2;
-    pos1 << 0, 0, 0;
-    pos2 << 0, 0, 0;
-
-    for (int i = 0; i < max_len; i++) {
-        if (o1->depth_map_reverse.find(o2->depth_map[i]) != o1->depth_map_reverse.end())
-            for (int j = 0; j < o1->depth_map.size(); j++) {
-                if (o1->depth_map[j] == o2->obj)
-                    return pos1;
-                pos1 += getElementFromName(o1->depth_map[j]->getType(), o1->depth_map[j]->getName())->kinematic->p;
-            }
-        if (o2->depth_map_reverse.find(o1->depth_map[i]) != o2->depth_map_reverse.end())
-            for (int j = 0; j < o2->depth_map.size(); j++) {
-                if (o2->depth_map[j] == o1->obj)
-                    return pos1;
-                pos1 += getElementFromName(o2->depth_map[j]->getType(), o2->depth_map[j]->getName())->kinematic->p;
-            }
-        //map1[o1->kinematic->getKinematicAnchor()] = o1->kinematic->p;
-        //map2[o2->kinematic->getKinematicAnchor()] = o2->kinematic->p;
-    }
-    return pos1;
 }

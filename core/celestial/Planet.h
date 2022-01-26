@@ -1,5 +1,4 @@
 #pragma once
-
 #include <chrono>
 #include <math.h>
 #include <Eigen/Dense>
@@ -12,7 +11,7 @@ using namespace std::chrono;
 using namespace Eigen;
 
 struct PlanetConfig {
-	float ecliptic_i = 0;
+	
 };
 
 struct PlanetConfigPackage {
@@ -25,6 +24,9 @@ class Planet: public CelestialBody {
 public:
 	Planet(PlanetConfigPackage config);
 	~Planet();
+
+	//Planet& operator=(const Planet& rhs) {};
+
 private:
 	PlanetConfig config_planet;
 };

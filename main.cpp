@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <stdexcept>
 #include <cstdlib>
@@ -28,6 +29,7 @@
 
 using namespace std;
 using namespace Eigen;
+
 
 int main() {
 

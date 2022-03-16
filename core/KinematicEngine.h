@@ -18,6 +18,7 @@ private:
 
 	bool q_busy = false;
 	std::vector<Element*> queue;
+	std::vector<Element*> history;
 	
 
 	// Engine toggle for pause/resume.

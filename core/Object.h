@@ -21,12 +21,18 @@ enum ObjectTypes {
 
 static const char* filenames[] = { "Stars.dat", "Planets.dat", "Moons.dat" };
 
+struct VRAM_DAT {
+	std::vector<float> data;
+	std::vector<unsigned int> indicies;
+};
+
 struct ObjectConfig {
 	int id;
 	std::string name = "N/A";
 	ObjectTypes type;
 	double mass = 0;
 	double mu = 0;
+	VRAM_DAT gpu_mesh;
 };
 
 class Object {

@@ -5,6 +5,7 @@
 #include "celestial/Star.h"
 #include "celestial/Planet.h"
 #include "Sattelite.h"
+#include "../gui/GUIPipeline.h"
 
 #include "Element.h"
 
@@ -30,7 +31,7 @@ public:
 
 	std::vector<Element*> elements;
 
-	SolarSystem();
+	SolarSystem(GUIPipeline* renderer);
 
 	Object* getObjectFromName(ObjectTypes type, std::string name);
 	Element* getElementFromName(ObjectTypes type, std::string name);
@@ -48,6 +49,7 @@ private:
 	std::vector<Element*> loadMoons();
 	std::vector<Element*> loadSattelites();
 
+	GUIPipeline* renderer;
 	KinematicEngine* ke;
 
 	//void initializePlanetaryOrbit(int num);

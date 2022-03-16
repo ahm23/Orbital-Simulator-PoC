@@ -15,6 +15,7 @@ void KinematicEngine::run(std::shared_mutex* m, std::condition_variable_any* cv)
 		}
 		// Create element update queue for threaded workers
 		queue = *el_ptr;
+		history = *el_ptr;
 		// Generate threads
 		std::vector<std::thread> threads;
 		for (int i = 0; i < maxThreads; i++)
@@ -62,6 +63,7 @@ void KinematicEngine::ComputeWorker(std::shared_mutex* m, std::condition_variabl
 					system("cls");
 					std::cout << p_calc << std::endl;
 				}
+				// incorporate GPU Vertex Buffer Position Code
 				//a_calc += (calculate_mu(obj->getMass(), system->starList[i]->obj->getMass()) / pow(p.norm(), 3)) * p;
 			}
 		}

@@ -3,7 +3,7 @@
 
 long SolarSystem::update_freq = 1000;
 
-SolarSystem::SolarSystem() {
+SolarSystem::SolarSystem(GUIPipeline* renderer) : renderer{ renderer } {
 
 	loadStars();
     loadPlanets();
@@ -52,6 +52,7 @@ std::vector<Element*> SolarSystem::loadPlanets() {
     for (int i = start; i < start + count; i++) {
         iBuffer_planet.push_back(i);
         planetMap[elements[i]->obj->getName()] = elements[i]->obj->getID();
+
     }
     return planetList;
 }

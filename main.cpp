@@ -5,23 +5,23 @@
 #include <GLFW/glfw3.h>
 #include <iomanip>
 #include "core/celestial/Planet.h"
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
-#include "VertexArray.h"
-#include "Shader.h"
+#include "gui/VertexBuffer.h"
+#include "gui/IndexBuffer.h"
+#include "gui/VertexArray.h"
+#include "gui/Shader.h"
 
 #include <vector>
 #include <Eigen/Dense>
 #include <fstream>
-#include "Renderer.h"
-#include "Texture.h"
+#include "gui/Renderer.h"
+#include "gui/Texture.h"
 
 #include "gtc/matrix_transform.hpp"
-#include "SphereRender.h"
-#include "utils_debug.h"
+#include "gui/SphereRender.h"
+#include "gui/utils_debug.h"
 
 #include "glm.hpp"
-#include "gui.hpp"
+#include "gui/gui.hpp"
 
 #include "core/SolarSystem.h"
 

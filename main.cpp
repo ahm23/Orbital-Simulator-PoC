@@ -6,23 +6,24 @@
 #include <GLFW/glfw3.h>
 #include <iomanip>
 #include "core/celestial/Planet.h"
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
-#include "VertexArray.h"
-#include "Shader.h"
-
+/*
+#include "gui_old/VertexBuffer.h"
+#include "gui_old/IndexBuffer.h"
+#include "gui_old/VertexArray.h"
+#include "gui_old/Shader.h"
+*/
 #include <vector>
 #include <Eigen/Dense>
 #include <fstream>
-#include "Renderer.h"
-#include "Texture.h"
-#include "utils_debug.h"
+//#include "gui_old/Renderer.h"
+//#include "gui_old/Texture.h"
+//#include "gui_old/utils_debug.h"
 
 #include "gtc/matrix_transform.hpp"
-#include "SphereRender.h"
+//#include "gui_old/SphereRender.h"
 
 #include "glm.hpp"
-#include "gui.hpp"
+//#include "gui_old/gui.hpp"
 
 #include "core/SolarSystem.h"
 #include "gui/GUIPipeline.h"
@@ -37,7 +38,7 @@ int main() {
 
     GUI gui();
 
-    initGUI();
+    //initGUI();
     
     GUIPipeline render(0.001);
     SolarSystem system(&render);

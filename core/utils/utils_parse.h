@@ -82,7 +82,7 @@ public:
                 el->obj = new Star(star);
                 list->push_back(el);
             } catch (int code) {
-                cout << code;
+                std::cout << code;
                 // TODO: Proper Error Handle
             }
         }
@@ -101,7 +101,7 @@ public:
                 list->push_back(el);
             }
             catch (int code) {
-                cout << code;
+                std::cout << code;
                 // TODO: Proper Error Handle
             }
         }
@@ -120,7 +120,7 @@ public:
                 list->push_back(el);
             }
             catch (int code) {
-                cout << code;
+                std::cout << code;
                 // TODO: Proper Error Handle
             }
         }
@@ -145,7 +145,7 @@ public:
 
     OrbitInit parseOrbit(int num, Object* planet, int* ref_t, std::string* ref_o, int i) {
         OrbitInit init;
-        cout << i;
+        std::cout << i;
         init.type = j[i]["init_orbit"]["type"];
         std::string type_angle = j[i]["init_orbit"]["type_angle"];
         *ref_t = j[i]["init_orbit"]["type_anchor"];

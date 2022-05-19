@@ -34,6 +34,7 @@ public:
 
 	Object* getObjectFromName(ObjectTypes type, std::string name);
 	Element* getElementFromName(ObjectTypes type, std::string name);
+	void initializeEngine();
 	Eigen::Vector3d getVectorBetweenObjects(Element* o1, Element* o2);
 	void mapSystem();
 

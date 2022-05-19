@@ -1,5 +1,6 @@
 #include "SolarSystem.h"
 #include "celestial/Moon.h"
+#include <yaml-cpp/yaml.h>
 
 long SolarSystem::update_freq = 1000;
 
@@ -33,37 +34,37 @@ SolarSystem::SolarSystem() {
 }
 
 std::vector<Element*> SolarSystem::loadStars() {
-    FileParser parser("C:\\Users\\netagive\\Desktop\\Orbital\\core\\Stars.dat");
+    FileParser parser("C:\\Users\\netagive\\Desktop\\Orbital\\stars.json");
     std::vector<Element*> starList;
     int start = (int)elements.size();
     int count = parser.parseObjects<Element, Star>(&elements);
     for (int i = start; i < count; i++) {
         iBuffer_star.push_back(i);
-        starMap[elements[i]->obj->getName()] = elements[i]->obj->getID();
+        starMap[elements[i]->obj->getName()] = elements[i]->obj->getID() - 1;
     }
     return starList;
 }
 
 std::vector<Element*> SolarSystem::loadPlanets() {
-    FileParser parser("C:\\Users\\netagive\\Desktop\\Orbital\\core\\Planets.dat");
+    FileParser parser("C:\\Users\\netagive\\Desktop\\Orbital\\planets.json");
     std::vector<Element*> planetList;
     int start = (int)elements.size();
     int count = parser.parseObjects<Element, Planet>(&elements);
     for (int i = start; i < start + count; i++) {
         iBuffer_planet.push_back(i);
-        planetMap[elements[i]->obj->getName()] = elements[i]->obj->getID();
+        planetMap[elements[i]->obj->getName()] = elements[i]->obj->getID() - 1;
     }
     return planetList;
 }
 
 std::vector<Element*> SolarSystem::loadMoons() {
-    FileParser parser("C:\\Users\\netagive\\Desktop\\Orbital\\core\\Moons.dat");
+    FileParser parser("C:\\Users\\netagive\\Desktop\\Orbital\\moons.json");
     std::vector<Element*> moonList;
     int start = (int)elements.size();
     int count = parser.parseObjects<Element, Moon>(&elements);
     for (int i = start; i < start + count; i++) {
         iBuffer_moon.push_back(i);
-        moonMap[elements[i]->obj->getName()] = elements[i]->obj->getID();
+        moonMap[elements[i]->obj->getName()] = elements[i]->obj->getID() - 1;
     }
     return moonList;
 }
@@ -81,7 +82,7 @@ void SolarSystem::initializeMechanics(int index, int num, ObjectTypes type) {
     Eigen::Vector3d Position, Velocity;
     int ref_type;
     
-    FileParser parser("C:\\Users\\netagive\\Desktop\\Orbital\\core\\" + (std::string)filenames[type - 1]);
+    FileParser parser("C:\\Users\\netagive\\Desktop\\Orbital\\" + (std::string)filenames[type - 1]);
 
     switch (type) {
     case STAR:
@@ -94,7 +95,7 @@ void SolarSystem::initializeMechanics(int index, int num, ObjectTypes type) {
         el = elements[num];
         break;
     }
-    OrbitInit init = parser.parseOrbit(index, el->obj, &ref_type, &ref_object);
+    OrbitInit init = parser.parseOrbit(index, el->obj, &ref_type, &ref_object, index);
     if (ref_type == ObjectTypes::BARYCENTRE) {
         init.init_mu = 0;
         el->anchor = NULL;
@@ -103,7 +104,6 @@ void SolarSystem::initializeMechanics(int index, int num, ObjectTypes type) {
         el->anchor = getObjectFromName((ObjectTypes)ref_type, ref_object);
         init.init_mu = calculate_mu(el->obj->getMass(), el->anchor->getMass());
     }
-
     el->obj->setMu(init.init_mu);
     switch (init.type) {
         case 0:

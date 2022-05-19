@@ -3,7 +3,7 @@
 #include "CelestialBody.h"
 
 struct StarConfig {
-	double temperature;
+	double temp_surface;
 };
 
 struct StarConfigPackage {

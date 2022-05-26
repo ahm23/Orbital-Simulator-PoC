@@ -160,8 +160,15 @@ void SolarSystem::initializeMechanics(int index, int num, ObjectTypes type) {
             el->obj->orbit.initOrbitCOE_ML(init, &Position, &Velocity);
             break;
     }
+
     el->obj->setPos(Position);
     el->obj->setVel(Velocity);
+
+    DWORD dwRead, dwWritten;
+    BOOL bSuccess = FALSE;
+
+    bSuccess = WriteFile(StdIN_W, "test", BUFSIZE, &dwWritten, NULL);
+    if (!bSuccess) std::cout << "b";
     /*
     if (el->kinematic->initKinematicProcess(Position, Velocity)) {
         std::std::cout << "\033[0;32;49mSUCCESS: Initialized Kinematic Process for Object: " << el->obj->getName() << "\033[0m" << std::endl;
@@ -223,11 +230,8 @@ Element* SolarSystem::getElementFromName(ObjectTypes type, std::string name) {
 }
 
 
-void SolarSystem::initializeEngine() {
-    HANDLE StdIN_R = NULL;
-    HANDLE StdIN_W = NULL;
-    HANDLE StdOUT_R = NULL;
-    HANDLE StdOUT_W = NULL;
+void SolarSystem::startEngine() {
+
 
     HANDLE g_hInputFile = NULL;
 

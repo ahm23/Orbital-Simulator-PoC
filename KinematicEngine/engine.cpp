@@ -4,6 +4,11 @@
 #define BUFSIZE 4096
 
 int main() {
+    struct DATA {
+
+    };
+
+
     CHAR chBuf[BUFSIZE];
     DWORD dwRead, dwWritten;
     HANDLE hStdin, hStdout;
@@ -23,7 +28,7 @@ int main() {
 
     for (;;) {
         // Read from standard input and stop on error or no data.
-        bSuccess = ReadFile(hStdin, chBuf, BUFSIZE, &dwRead, NULL);
+        bSuccess = ReadFile(hStdin, test, sizeof(test), &dwRead, NULL);
 
         if (!bSuccess)
             break;

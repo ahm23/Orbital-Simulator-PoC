@@ -34,7 +34,7 @@ public:
 
 	Object* getObjectFromName(ObjectTypes type, std::string name);
 	Element* getElementFromName(ObjectTypes type, std::string name);
-	void initializeEngine();
+	void startEngine();
 	Eigen::Vector3d getVectorBetweenObjects(Element* o1, Element* o2);
 	void mapSystem();
 
@@ -48,8 +48,15 @@ private:
 	std::vector<Element*> loadPlanets();
 	std::vector<Element*> loadMoons();
 	std::vector<Element*> loadSattelites();
-
+	
+	// Kinematic Engine Process Vars
 	KinematicEngine* ke;
+	HANDLE StdIN_R = NULL;
+	HANDLE StdIN_W = NULL;
+	HANDLE StdOUT_R = NULL;
+	HANDLE StdOUT_W = NULL;
+
+	
 
 	//void initializePlanetaryOrbit(int num);
 	void initializeMechanics(int, int num, ObjectTypes type);

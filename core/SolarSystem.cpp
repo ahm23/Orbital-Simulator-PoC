@@ -66,7 +66,7 @@ SolarSystem::SolarSystem() {
     }
 
     mapSystem();
-    initializeEngine();
+    startEngine();
     ke = new KinematicEngine(&elements, 1, &kinematic_m, &kinematic_cv);
 
     std::lock_guard<std::shared_mutex> lk(kinematic_m);

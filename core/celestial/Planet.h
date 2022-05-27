@@ -6,7 +6,6 @@
 #include "CelestialBody.h"
 #include <condition_variable>
 
-using namespace std::chrono;
 using namespace Eigen;
 
 struct PlanetConfig {

@@ -1,12 +1,10 @@
 #include "SolarSystem.h"
 #include "celestial/Moon.h"
 #include <yaml-cpp/yaml.h>
-#include <Windows.h>
+
 #include <tchar.h>
 #include <stdio.h> 
 #include <strsafe.h>
-
-#define BUFSIZE 4096 
 
 long SolarSystem::update_freq = 1000;
 
@@ -66,8 +64,26 @@ SolarSystem::SolarSystem() {
     }
 
     mapSystem();
-    startEngine();
-    ke = new KinematicEngine(&elements, 1, &kinematic_m, &kinematic_cv);
+    engineStart();
+
+
+
+    P_INIT init;
+    init.body = {
+        1,2,3,4,5,6
+    };
+
+
+    PACKET testP = {
+        213454, REQ_TYPE::INIT, 0,
+        *(init.buffer)
+    };
+    
+    // NOTE: I might realloc() the body buffer
+
+    engineRequest(testP);
+
+    //ke = new KinematicEngine(&elements, 1, &kinematic_m, &kinematic_cv);
 
     std::lock_guard<std::shared_mutex> lk(kinematic_m);
     toggle_kinematic = true;
@@ -164,11 +180,11 @@ void SolarSystem::initializeMechanics(int index, int num, ObjectTypes type) {
     el->obj->setPos(Position);
     el->obj->setVel(Velocity);
 
-    DWORD dwRead, dwWritten;
+    /*DWORD dwRead, dwWritten;
     BOOL bSuccess = FALSE;
 
     bSuccess = WriteFile(StdIN_W, "test", BUFSIZE, &dwWritten, NULL);
-    if (!bSuccess) std::cout << "b";
+    if (!bSuccess) std::cout << "b";*/
     /*
     if (el->kinematic->initKinematicProcess(Position, Velocity)) {
         std::std::cout << "\033[0;32;49mSUCCESS: Initialized Kinematic Process for Object: " << el->obj->getName() << "\033[0m" << std::endl;
@@ -230,43 +246,31 @@ Element* SolarSystem::getElementFromName(ObjectTypes type, std::string name) {
 }
 
 
-void SolarSystem::startEngine() {
-
-
+void SolarSystem::engineStart() {
     HANDLE g_hInputFile = NULL;
 
     SECURITY_ATTRIBUTES saAttr;
 
-    // Set the bInheritHandle flag so pipe handles are inherited. 
-
     saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
-    saAttr.bInheritHandle = TRUE;
+    saAttr.bInheritHandle = TRUE;  // Set the bInheritHandle flag so pipe handles are inherited. 
     saAttr.lpSecurityDescriptor = NULL;
 
     // Create a pipe for the child process's STDOUT. 
     if (!CreatePipe(&StdOUT_R, &StdOUT_R, &saAttr, 0))
         std::cout << "err";
-        //ErrorExit(TEXT("StdoutRd CreatePipe"));
 
     // Ensure the read handle to the pipe for STDOUT is not inherited.
     if (!SetHandleInformation(StdOUT_R, HANDLE_FLAG_INHERIT, 0))
         std::cout << "err";
-        //ErrorExit(TEXT("Stdout SetHandleInformation"));
 
     // Create a pipe for the child process's STDIN. 
     if (!CreatePipe(&StdIN_R, &StdIN_W, &saAttr, 0))
         std::cout << "err";
-        //ErrorExit(TEXT("Stdin CreatePipe"));
 
     // Ensure the write handle to the pipe for STDIN is not inherited. 
     if (!SetHandleInformation(StdIN_W, HANDLE_FLAG_INHERIT, 0))
         std::cout << "err";
-        //ErrorExit(TEXT("Stdin SetHandleInformation"));
 
-    // Create the child process. 
-    //CreateChildProcess();
-
-    TCHAR szCmdline[] = TEXT("child");
     PROCESS_INFORMATION piProcInfo;
     STARTUPINFO siStartInfo;
     BOOL bSuccess = FALSE;
@@ -288,7 +292,7 @@ void SolarSystem::startEngine() {
     // Create the child process. 
 
     bSuccess = CreateProcess(
-        "C:\\Users\\netagive\\Desktop\\Orbital\\x64\\Release\\KinematicEngine.exe",
+        "C:\\Users\\netagive\\Desktop\\Orbital\\x64\\Debug\\KinematicEngine.exe",
         NULL,     // command line 
         NULL,          // process security attributes 
         NULL,          // primary thread security attributes 
@@ -334,5 +338,24 @@ void SolarSystem::startEngine() {
 
     // The remaining open handles are cleaned up when this process terminates. 
     // To avoid resource leaks in a larger application, close handles explicitly. 
+}
 
+void SolarSystem::engineRequest(PACKET packet) {
+    DWORD dwWritten;
+    char buffer[MAX_BUFSIZE];
+    BOOL bSuccess = FALSE;
+
+    memcpy(buffer, &packet, sizeof PACKET);
+
+    std::cout << "debug 1" << std::endl;
+
+    bSuccess = WriteFile(StdIN_W, buffer, sizeof(buffer), &dwWritten, NULL);
+    if (!bSuccess) std::cout << "err";
+
+    std::cout << "debug 2" << std::endl;
+    // Close the pipe handle so the child process stops reading. 
+
+    if (!CloseHandle(StdIN_W))
+        std::cout << "closedpipe";
+      
 }

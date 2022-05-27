@@ -1,7 +1,9 @@
 #include <windows.h>
 #include <stdio.h>
+#include <iostream>
+#include <string>
 
-#define BUFSIZE 4096
+#include "../commons/ipc.h"
 
 int main() {
     struct DATA {
@@ -9,13 +11,14 @@ int main() {
     };
 
 
-    CHAR chBuf[BUFSIZE];
+    char buffer[MAX_BUFSIZE];
     DWORD dwRead, dwWritten;
     HANDLE hStdin, hStdout;
     BOOL bSuccess;
 
     hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
     hStdin = GetStdHandle(STD_INPUT_HANDLE);
+    std::cout << "debug 3" << std::endl;
     if (hStdout == INVALID_HANDLE_VALUE || hStdin == INVALID_HANDLE_VALUE)
         ExitProcess(1);
 
@@ -28,13 +31,14 @@ int main() {
 
     for (;;) {
         // Read from standard input and stop on error or no data.
-        bSuccess = ReadFile(hStdin, test, sizeof(test), &dwRead, NULL);
+        bSuccess = ReadFile(hStdin, buffer, sizeof(buffer), &dwRead, NULL);
+        PACKET p;
+        memcpy(&p, buffer, sizeof(PACKET));
 
-        if (!bSuccess)
-            break;
-
-        // Write to standard output and stop on error.
-        bSuccess = WriteFile(hStdout, chBuf, dwRead, &dwWritten, NULL);
+        bSuccess = WriteFile(hStdout, buffer, sizeof(buffer), &dwWritten, NULL);
+        std::string path = "C:\\Users\\netagive\\Desktop\\Orbital\\test.vbs " + std::to_string(p.id);
+        system(path.c_str());
+        std::cout << p.id << std::endl;
 
         if (!bSuccess)
             break;

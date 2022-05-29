@@ -55,7 +55,7 @@ private:
 	HANDLE StdOUT_R;
 	HANDLE StdOUT_W;
 
-	void engineRequest(PACKET);
+	void engineRequest(P_PACKET);
 
 	//void initializePlanetaryOrbit(int num);
 	void initializeMechanics(int, int num, ObjectTypes type);

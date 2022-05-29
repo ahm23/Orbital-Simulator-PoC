@@ -71,7 +71,8 @@ public:
     int parseObjects(std::vector<T*>* var) { std::cout << "Unknown Object Type!"; return 0;}
     template<>
     int parseObjects<Element, Star>(std::vector <Element*>* list) {
-        for (int i = 0; i < j.size(); i++) {
+        int i = 0;
+        for (;i < j.size(); i++) {
             try {
                 StarConfigPackage star;
                 star.config_obj.id = (int)list->size() + 1;                 // Assign internal object ID
@@ -86,11 +87,12 @@ public:
                 // TODO: Proper Error Handle
             }
         }
-        return j.size();
+        return i;
     }
     template<>
     int parseObjects<Element, Planet>(std::vector<Element*>* list) {
-        for (int i = 0; i < j.size(); i++) {
+        int i = 0;
+        for (; i < j.size(); i++) {
             try {
                 PlanetConfigPackage planet;
                 planet.config_obj.id = (int)list->size() + 1;                 // Assign internal object ID
@@ -105,11 +107,12 @@ public:
                 // TODO: Proper Error Handle
             }
         }
-        return j.size();
+        return i;
     }
     template<>
     int parseObjects<Element, Moon>(std::vector<Element*>* list) {
-        for (int i = 0; i < j.size(); i++) {
+        int i = 0;
+        for (; i < j.size(); i++) {
             try {
                 MoonConfigPackage moon;
                 moon.config_obj.id = (int)list->size() + 1;                 // Assign internal object ID
@@ -124,11 +127,12 @@ public:
                 // TODO: Proper Error Handle
             }
         }
-        return j.size();
+        return i;
     }
     template<>
     int parseObjects<Element, Sattelite>(std::vector<Element*>* list) {
-        for (int i = 0; i < count; i++) {
+        int i = 0;
+        for (; i < j.size(); i++) {
             SatteliteConfigPackage sattelite;
             sattelite.config_obj.id = (int)list->size();
             sattelite.config_obj.type = ObjectTypes::SATTELITE;
@@ -139,7 +143,7 @@ public:
             el->obj = new Sattelite(sattelite);
             list->push_back(el);
         }
-        return j.size();
+        return i;
     }
 
 

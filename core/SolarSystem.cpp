@@ -68,17 +68,14 @@ SolarSystem::SolarSystem() {
 
 
 
-    P_INIT init;
-    init.body = {
-        1,2,3,4,5,6
+    P_INIT init = {
+        {{1.044,2.0,3.41}, {4.0,5.0,6.0}}
     };
 
-
-    PACKET testP = {
-        213454, REQ_TYPE::INIT, 0,
-        *(init.buffer)
+    P_PACKET testP = {
+        213454, REQ_TYPE::INIT, 0
     };
-    
+    memcpy(&testP.p.body, init.buffer, sizeof(init.buffer));
     // NOTE: I might realloc() the body buffer
 
     engineRequest(testP);
@@ -340,16 +337,13 @@ void SolarSystem::engineStart() {
     // To avoid resource leaks in a larger application, close handles explicitly. 
 }
 
-void SolarSystem::engineRequest(PACKET packet) {
+void SolarSystem::engineRequest(P_PACKET packet) {
     DWORD dwWritten;
-    char buffer[MAX_BUFSIZE];
     BOOL bSuccess = FALSE;
-
-    memcpy(buffer, &packet, sizeof PACKET);
 
     std::cout << "debug 1" << std::endl;
 
-    bSuccess = WriteFile(StdIN_W, buffer, sizeof(buffer), &dwWritten, NULL);
+    bSuccess = WriteFile(StdIN_W, packet.buffer, sizeof(PACKET), &dwWritten, NULL);
     if (!bSuccess) std::cout << "err";
 
     std::cout << "debug 2" << std::endl;

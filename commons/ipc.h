@@ -1,7 +1,6 @@
 #pragma once
 
-#define MAX_BUFSIZE_BODY 1024
-#define MAX_BUFSIZE 256 + MAX_BUFSIZE_BODY
+#define MAX_BUFSIZE_BODY 256
 
 
 enum REQ_TYPE { INIT, GET, MOD, RES, DEL };
@@ -13,14 +12,51 @@ struct PACKET {
 	char body[MAX_BUFSIZE_BODY];
 };
 
+union P_PACKET {
+	PACKET p;
+	unsigned char buffer[sizeof(PACKET)];
+};
+
+struct B_INIT {
+	double pos[3];
+	double vel[3];
+};
+
 union P_INIT {
-	struct INIT {
-		double pos_x;
-		double pos_y;
-		double pos_z;
-		double vel_x;
-		double vel_y;
-		double vel_z;
-	} body;
-	unsigned char buffer[sizeof(INIT)];
+	B_INIT body;
+	unsigned char buffer[sizeof(B_INIT)];
+};
+
+struct B_MOD {
+	double vel[3];
+};
+
+union P_MOD {
+	B_MOD body;
+	unsigned char buffer[sizeof(MOD)];
+};
+
+
+// Return data toggle/flags
+struct B_GET {
+	bool r_vel = true;
+	bool r_pos = true;
+	bool r_acc = false;
+};
+
+union P_GET {
+	B_GET body;
+	unsigned char buffer[sizeof(GET)];
+};
+
+
+struct B_RES {
+	double pos[3];
+	double vel[3];
+	double acc[3];
+};
+
+union P_RES {
+	B_RES body;
+	unsigned char buffer[sizeof(RES)];
 };

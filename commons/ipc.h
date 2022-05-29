@@ -2,7 +2,6 @@
 
 #define MAX_BUFSIZE_BODY 256
 
-
 enum REQ_TYPE { INIT, GET, MOD, RES, DEL };
 
 struct PACKET {
@@ -36,8 +35,6 @@ union P_MOD {
 	unsigned char buffer[sizeof(MOD)];
 };
 
-
-// Return data toggle/flags
 struct B_GET {
 	bool r_vel = true;
 	bool r_pos = true;
@@ -48,7 +45,6 @@ union P_GET {
 	B_GET body;
 	unsigned char buffer[sizeof(GET)];
 };
-
 
 struct B_RES {
 	double pos[3];

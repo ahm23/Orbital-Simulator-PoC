@@ -14,6 +14,7 @@
 
 
 
+
 class SolarSystem {
 public:
 	std::unordered_map<std::string, int> starMap;

@@ -17,8 +17,9 @@ union P_PACKET {
 };
 
 struct B_INIT {
-	double pos[3];
-	double vel[3];
+	bool astronomical;
+	Eigen::Vector3d pos;
+	Eigen::Vector3d vel;
 };
 
 union P_INIT {

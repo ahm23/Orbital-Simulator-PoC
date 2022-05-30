@@ -3,13 +3,21 @@
 #include <iostream>
 #include <string>
 
+#include "engine.h"
+
 #include "../commons/ipc.h"
-#include "../commons/error.h"
 
 int main() {
     DWORD dwRead;
     HANDLE hStdin, hStdout;
     BOOL bSuccess;
+    bool toggle_kinematic = false;
+    std::condition_variable_any cv;
+    std::shared_mutex mut;
+
+
+    ENGINE* e = new ENGINE(1, &mut, &cv);
+
 
     hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
     hStdin = GetStdHandle(STD_INPUT_HANDLE);
@@ -24,6 +32,7 @@ int main() {
         if (p.p.type == REQ_TYPE::INIT) {
             B_INIT dat;
             memcpy(&dat, p.p.body, sizeof(B_INIT));
+            e->addObject(p.p.id, dat);
         }
 
         //if (!bSuccess)

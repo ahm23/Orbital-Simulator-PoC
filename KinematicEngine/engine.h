@@ -3,6 +3,8 @@
 #include <shared_mutex>
 #include <Eigen/Dense>
 
+#include "../commons/ipc.h"
+
 struct object {
 	int id;
 	bool astronomical;
@@ -10,16 +12,19 @@ struct object {
 	Eigen::Vector3d v;
 };
 
-class engine {
+class ENGINE {
 public:
-	engine(int, std::shared_mutex*, std::condition_variable_any*);
-	~engine();
+	ENGINE(int, std::shared_mutex*, std::condition_variable_any*);
+	~ENGINE();
+
+	int addObject(int, B_INIT);
 
 private:
 	int maxThreads = 0;
 	std::vector<std::thread> threads;
 	
 	void ComputeWorker(std::shared_mutex* m, std::condition_variable_any* cv);
+	
 
 	bool q_busy = false;
 	std::vector<object> sys_objects;
@@ -31,4 +36,3 @@ private:
 	bool toggle = false;
 	bool sig_terminate = false;
 };
-

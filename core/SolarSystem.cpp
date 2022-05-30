@@ -12,6 +12,8 @@ SolarSystem::SolarSystem() {
     loadPlanets();
     loadMoons();
 
+    engineStart();
+    
     for (int i = 0; i < iBuffer_star.size(); i++) {
         initializeMechanics(i, iBuffer_star[i], STAR);
     }
@@ -25,21 +27,7 @@ SolarSystem::SolarSystem() {
     }
 
     mapSystem();
-    engineStart();
 
-
-
-    P_INIT init = {
-        {{1.044,2.0,3.41}, {4.0,5.0,6.0}}
-    };
-
-    P_PACKET testP = {
-        213454, REQ_TYPE::INIT, 0
-    };
-    memcpy(&testP.p.body, init.buffer, sizeof(init.buffer));
-    // NOTE: I might realloc() the body buffer
-
-    engineRequest(testP);
 
     //ke = new KinematicEngine(&elements, 1, &kinematic_m, &kinematic_cv);
 
@@ -96,15 +84,22 @@ void SolarSystem::initializeMechanics(int index, int num, ObjectTypes type) {
     std::string ref_object;
     Eigen::Vector3d Position, Velocity;
     int ref_type;
-    
+    bool astronomical = false;
+
     FileParser parser("C:\\Users\\netagive\\Desktop\\Orbital\\" + (std::string)filenames[type - 1]);
 
     switch (type) {
     case STAR:
         el = elements[num];
+        astronomical = true;
         break;
     case PLANET:
         el = elements[num];
+        astronomical = true;
+        break;
+    case MOON:
+        el = elements[num];
+        astronomical = true;
         break;
     default:
         el = elements[num];
@@ -137,6 +132,18 @@ void SolarSystem::initializeMechanics(int index, int num, ObjectTypes type) {
 
     el->obj->setPos(Position);
     el->obj->setVel(Velocity);
+
+    P_INIT p_body = {
+        astronomical, Position, Velocity
+    };
+
+    P_PACKET p = {
+        el->obj->getID(), REQ_TYPE::INIT, 0
+    };
+    memcpy(&p.p.body, p_body.buffer, sizeof(p_body.buffer));
+    // NOTE: I might realloc() the body buffer
+
+    engineRequest(p);
 }
 
 
@@ -254,7 +261,4 @@ void SolarSystem::engineRequest(P_PACKET packet) {
 
     bSuccess = WriteFile(StdIN_W, packet.buffer, sizeof(PACKET), &dwWritten, NULL);
     if (!bSuccess) ThrowWarn(TEXT("Kinetic Engine IPC Packet Send Failiure"));
-
-    if (!CloseHandle(StdIN_W))
-        ThrowError(ERR::FATAL, TEXT("Failed to Close Kinetic Engine Communication Packet Pipe"));
 }

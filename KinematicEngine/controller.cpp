@@ -11,12 +11,15 @@ int main() {
     DWORD dwRead;
     HANDLE hStdin, hStdout;
     BOOL bSuccess;
-    bool toggle_kinematic = false;
     std::condition_variable_any cv;
-    std::shared_mutex mut;
+    std::mutex mut;
+    int status = 0;
 
+    ENGINE* e = new ENGINE(4, &mut, &cv, &status);
 
-    ENGINE* e = new ENGINE(1, &mut, &cv);
+    while (!status);
+    if (status == 2)
+        cv.notify_all();
 
 
     hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -26,7 +29,7 @@ int main() {
         ExitProcess(1);
 
     for (;;) {
-        // Read from standard input and stop on error or no data.
+        // Read from StdIN
         P_PACKET p;
         bSuccess = ReadFile(hStdin, p.buffer, sizeof(PACKET), &dwRead, NULL);
         if (p.p.type == REQ_TYPE::INIT) {
@@ -34,9 +37,6 @@ int main() {
             memcpy(&dat, p.p.body, sizeof(B_INIT));
             e->addObject(p.p.id, dat);
         }
-
-        //if (!bSuccess)
-            // listening
     }
     return 0;
 }

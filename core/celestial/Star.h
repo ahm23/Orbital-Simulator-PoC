@@ -1,5 +1,5 @@
 #pragma once
-#include "../constants.h"
+#include "../../commons/constants.h"
 #include "CelestialBody.h"
 
 struct StarConfig {

@@ -8,7 +8,7 @@
 #include "../celestial/Planet.h"
 #include "../celestial/Moon.h"
 #include "../Sattelite.h"
-#include "../constants.h"
+#include "../../commons/constants.h"
 #include <limits>
 #include <nlohmann/json.hpp>
 
@@ -155,6 +155,7 @@ public:
         *ref_t = j[i]["init_orbit"]["type_anchor"];
         *ref_o = j[i]["init_orbit"]["anchor"];
         // TODO: Fix other preliminary orbit determinations
+        init.timestamp = j[i]["init_orbit"]["timestamp"];
         switch (init.type) {
             case 0:
                 file >> init.coe.TA >> init.coe.a >> init.coe.e >> init.coe.i >> init.coe.raan >> init.coe.omega;

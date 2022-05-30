@@ -29,6 +29,7 @@ struct OrbitInit {
 	double init_ml;
 	double init_ea;
 	double init_mu;
+	unsigned int timestamp;
 } ;
 
 class Orbit {

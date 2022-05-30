@@ -18,6 +18,8 @@ union P_PACKET {
 
 struct B_INIT {
 	bool astronomical;
+	double mass;
+	unsigned int time;
 	Eigen::Vector3d pos;
 	Eigen::Vector3d vel;
 };

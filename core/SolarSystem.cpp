@@ -134,7 +134,7 @@ void SolarSystem::initializeMechanics(int index, int num, ObjectTypes type) {
     el->obj->setVel(Velocity);
 
     P_INIT p_body = {
-        astronomical, Position, Velocity
+        astronomical, el->obj->getMass(), init.timestamp, Position, Velocity
     };
 
     P_PACKET p = {

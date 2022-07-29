@@ -48,8 +48,6 @@ private:
 	std::vector<object> sys_objects;
 	std::vector<object> objects;
 	std::vector<object> queue;
-	std::vector<std::vector<object>> buffer_sys_objects;
-	std::vector<std::vector<object>> buffer_objects;
 
 	int b_count = -1;
 

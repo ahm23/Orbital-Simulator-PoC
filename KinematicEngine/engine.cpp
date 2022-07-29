@@ -19,11 +19,10 @@ void ENGINE::ComputeWorker(int th_id, std::mutex* m, std::condition_variable_any
 	Eigen::Vector3d calc_p;
 	Eigen::Vector3d calc_v;
 	Eigen::Vector3d calc_a;
-	int count_accelerator;
 	uint64_t time;
 	uint64_t time_diff;
 	object el;
-	std::vector<object> sys_compare;
+	std::vector<object> sys_new;
 	bool ac = false;
 	while (true) {
 		time = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
@@ -35,29 +34,23 @@ void ENGINE::ComputeWorker(int th_id, std::mutex* m, std::condition_variable_any
 		}
 		if (queue.empty()) {
 			if (lead && working == 0) {
-				if (!buffer_objects.size() && !buffer_sys_objects.size()) {
-					std::this_thread::sleep_for(std::chrono::milliseconds(time_increment));
+				// Update "celestial system" objects.
+				sys_objects = sys_new;
+				sys_new = std::vector<object>();
+				// Trigger action-queue check & graphics update.
+				// TODO
+				// Disable catchup processing & transition to real-time.
+				if (time < sys_objects[0].time) {
+					if (catchup) catchup = false;
+					std::this_thread::sleep_for(std::chrono::milliseconds(sys_objects[0].time - time));
 					continue;
 				}
-				if (buffer_objects.size() > buffer_capacity) {
-					buffer_objects.erase(buffer_objects.begin());
-					buffer_sys_objects.erase(buffer_sys_objects.begin());
-					b_count--;
-					if (time < buffer_sys_objects[1][0].time) {
-						if (catchup) catchup = false;
-						std::this_thread::sleep_for(std::chrono::milliseconds(buffer_sys_objects[1][0].time - time));
-						continue;
-					}
-				}
-				buffer_objects.push_back({});
-				buffer_sys_objects.push_back({});
-				b_count++;
 				working = 0;
+				// Fill queue with objects
 				m->lock();
-				queue.insert(queue.end(), buffer_sys_objects[b_count - 1].begin(), buffer_sys_objects[b_count - 1].end());
-				queue.insert(queue.end(), buffer_objects[b_count - 1].begin(), buffer_objects[b_count - 1].end());
+				queue.insert(queue.end(), sys_objects.begin(), sys_objects.end());
+				queue.insert(queue.end(), objects.begin(), objects.end());
 				m->unlock();
-				//queue = objects;
 			}
 			else {
 				if (!catchup)
@@ -74,8 +67,8 @@ void ENGINE::ComputeWorker(int th_id, std::mutex* m, std::condition_variable_any
 			q_busy = th_id;
 
 			if (q_busy != th_id) continue;
-			//std::shared_lock<std::shared_mutex> lock(*m);
-			//sys_compare = sys_objects;*/
+			//std::shared_lock<std::shared_mutex> lock(*m);*/
+			//sys_compare = sys_objects;
 			m->lock();
 			if (queue.empty()) {
 				m->unlock();
@@ -89,11 +82,10 @@ void ENGINE::ComputeWorker(int th_id, std::mutex* m, std::condition_variable_any
 			m->unlock();
 			// v2.1 - Efficiency upgrade.
 			calc_a << 0, 0, 0;
-			count_accelerator = b_count - 1;
-			for (int i = 0; i < buffer_sys_objects[count_accelerator].size(); i++) {
-				if (el.id == buffer_sys_objects[count_accelerator][i].id) continue;
-				temp_p = el.p - buffer_sys_objects[count_accelerator][i].p;
-				calc_a += (calculate_mu(el.mass, buffer_sys_objects[count_accelerator][i].mass) / pow(temp_p.norm(), 3)) * temp_p;
+			for (int i = 0; i < sys_objects.size(); i++) {
+				if (el.id == sys_objects[i].id) continue;
+				temp_p = el.p - sys_objects[i].p;
+				calc_a += (calculate_mu(el.mass, sys_objects[i].mass) / pow(temp_p.norm(), 3)) * temp_p;
 			}
 			el.v += calc_a * (double)(el.time + time_increment) / 1000 - calc_a * (double)el.time / 1000;
 			el.p += el.v * (double)(el.time + time_increment) / 1000 - el.v * (double)el.time / 1000;
@@ -103,9 +95,9 @@ void ENGINE::ComputeWorker(int th_id, std::mutex* m, std::condition_variable_any
 
 			m->lock();
 			if (el.astronomical)
-				(buffer_sys_objects.back()).push_back(el);
+				sys_new.push_back(el);
 			else
-				(buffer_objects.back()).push_back(el);
+				objects.push_back(el);
 			m->unlock();
 			time_diff = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count() - time;
 		}
@@ -125,15 +117,10 @@ void ENGINE::ComputeWorker(int th_id, std::mutex* m, std::condition_variable_any
 }
 
 int ENGINE::addObject(int id, B_INIT o) {
-	if (b_count < 0) {
-		buffer_objects.push_back({});
-		buffer_sys_objects.push_back({});
-		b_count++;
-	}
 	if (o.astronomical)
-		buffer_sys_objects[b_count].push_back({id, o.astronomical, o.mass, o.time, o.pos, o.vel});
+		sys_objects.push_back({id, o.astronomical, o.mass, o.time, o.pos, o.vel});
 	else
-		buffer_objects[b_count].push_back({ id, o.astronomical, o.mass, o.time, o.pos, o.vel });
+		objects.push_back({ id, o.astronomical, o.mass, o.time, o.pos, o.vel });
 	return 0;
 }
 

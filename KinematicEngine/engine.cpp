@@ -1,11 +1,12 @@
 #pragma once
 #include "engine.h"
 
-ENGINE::ENGINE(int maxThreads, std::mutex* m, std::condition_variable_any* cv, int* status) {
+ENGINE::ENGINE(int maxThreads, std::mutex* m, std::condition_variable_any* cvar, int* status) {
 	maxTh = maxThreads;
-	threads.push_back(std::thread([this, m, cv, status] { ComputeWorker(1, m, cv, status, true); }));
+	cv = cvar;
+	threads.push_back(std::thread([this, m, status] { ComputeWorker(1, m, status, true); }));
 	for (int i = 1; i < maxTh; i++)
-		threads.push_back(std::thread([this, i, m, cv, status] { ComputeWorker(i + 2, m, cv, status, false); }));
+		threads.push_back(std::thread([this, i, m, status] { ComputeWorker(i + 2, m, status, false); }));
 	for (auto& th : threads) th.detach();
 }
 
@@ -14,7 +15,7 @@ ENGINE::~ENGINE() {
 	threads.clear();
 }
 
-void ENGINE::ComputeWorker(int th_id, std::mutex* m, std::condition_variable_any* cv, int* status, bool lead) {
+void ENGINE::ComputeWorker(int th_id, std::mutex* m, int* status, bool lead) {
 	Eigen::Vector3d temp_p;
 	Eigen::Vector3d calc_p;
 	Eigen::Vector3d calc_v;
@@ -31,16 +32,22 @@ void ENGINE::ComputeWorker(int th_id, std::mutex* m, std::condition_variable_any
 			if (lead) *status = 2;
 			std::unique_lock<std::mutex> lk(*m);
 			cv->wait(lk, [&] { if (!toggle) toggle = true;  return toggle; });
+			sys_new = sys_objects;
 		}
 		if (queue.empty()) {
 			if (lead && working == 0) {
 				// Update "celestial system" objects.
-				sys_objects = sys_new;
-				sys_new = std::vector<object>();
-				// Trigger action-queue check & graphics update.
-				// TODO
+				if (sys_new.size()) {
+					sys_objects = sys_new;
+					sys_new.clear();
+				}
+				// Check for actions check & graphics update.
+				if (paused) {
+					std::unique_lock<std::mutex> lk(*m);
+					cv->wait(lk, [&] { if (paused) paused = false;  return paused; });
+				}
 				// Disable catchup processing & transition to real-time.
-				if (time < sys_objects[0].time) {
+				if (sys_objects.size() && time < sys_objects[0].time) {
 					if (catchup) catchup = false;
 					std::this_thread::sleep_for(std::chrono::milliseconds(sys_objects[0].time - time));
 					continue;
@@ -55,6 +62,7 @@ void ENGINE::ComputeWorker(int th_id, std::mutex* m, std::condition_variable_any
 			else {
 				if (!catchup)
 					std::this_thread::sleep_for(std::chrono::milliseconds(time_increment / 2));
+				// might add second condition variable for lead thread to dispatch secondary compute threads, better than sleep.
 				continue;
 			}
 		}
@@ -83,6 +91,8 @@ void ENGINE::ComputeWorker(int th_id, std::mutex* m, std::condition_variable_any
 			// v2.1 - Efficiency upgrade.
 			calc_a << 0, 0, 0;
 			for (int i = 0; i < sys_objects.size(); i++) {
+				if (i > sys_objects.size() - 1)
+					std::cout << "wack";
 				if (el.id == sys_objects[i].id) continue;
 				temp_p = el.p - sys_objects[i].p;
 				calc_a += (calculate_mu(el.mass, sys_objects[i].mass) / pow(temp_p.norm(), 3)) * temp_p;
@@ -117,13 +127,39 @@ void ENGINE::ComputeWorker(int th_id, std::mutex* m, std::condition_variable_any
 }
 
 int ENGINE::addObject(int id, B_INIT o) {
-	if (o.astronomical)
-		sys_objects.push_back({id, o.astronomical, o.mass, o.time, o.pos, o.vel});
-	else
+	softPause();
+	while (working);
+	if (o.astronomical) {
+		sys_objects.push_back({ id, o.astronomical, o.mass, o.time, o.pos, o.vel });
+		sys_object_ids.insert({ id, sys_objects.size()-1 });
+	}
+	else {
 		objects.push_back({ id, o.astronomical, o.mass, o.time, o.pos, o.vel });
+		object_ids.insert({ id, objects.size()-1 });
+	}
+	cv->notify_all();
 	return 0;
+}
+
+object ENGINE::getObject(int id) {
+	return sys_object_ids[id] < sys_objects.size() && sys_objects[sys_object_ids[id]].id == id ? sys_objects[sys_object_ids[id]] : objects[object_ids[id]];
+}
+
+Eigen::Vector3d ENGINE::getPosition(int id) {
+	object* obj = sys_object_ids[id] < sys_objects.size() && sys_objects[sys_object_ids[id]].id == id ? &sys_objects[sys_object_ids[id]] : &objects[object_ids[id]];
+	return (*obj).p;
+}
+
+Eigen::Vector3d ENGINE::getVelocity(int id) {
+	object* obj = sys_object_ids[id] < sys_objects.size() && sys_objects[sys_object_ids[id]].id == id ? &sys_objects[sys_object_ids[id]] : &objects[object_ids[id]];
+	return (*obj).v;
 }
 
 void ENGINE::addToBuffer(std::mutex* m, object_sm* e, bool sys) {
 
+}
+
+int ENGINE::softPause() {
+	paused++;
+	return paused;
 }

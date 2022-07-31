@@ -1,6 +1,6 @@
 #pragma once
-
 #define MAX_BUFSIZE_BODY 256
+#include <Eigen/Dense>
 
 enum REQ_TYPE { INIT, GET, MOD, RES, DEL };
 
@@ -46,16 +46,16 @@ struct B_GET {
 
 union P_GET {
 	B_GET body;
-	unsigned char buffer[sizeof(GET)];
+	unsigned char buffer[sizeof(B_GET)];
 };
 
 struct B_RES {
-	double pos[3];
-	double vel[3];
-	double acc[3];
+	uint64_t ts;
+	Eigen::Vector3d pos;
+	Eigen::Vector3d vel;
 };
 
 union P_RES {
 	B_RES body;
-	unsigned char buffer[sizeof(RES)];
+	unsigned char buffer[sizeof(B_RES)];
 };

@@ -14,6 +14,7 @@ SolarSystem::SolarSystem() {
 
     engineStart();
     
+    std::cout << "\nINITIALIZING CELESTIAL MECHANICS...";
     for (int i = 0; i < iBuffer_star.size(); i++) {
         initializeMechanics(i, iBuffer_star[i], STAR);
     }
@@ -25,15 +26,18 @@ SolarSystem::SolarSystem() {
     for (int i = 0; i < iBuffer_moon.size(); i++) {
         initializeMechanics(i, iBuffer_moon[i], MOON);
     }
-
+    std::cout << "\nCELESTIAL MECHANICS INITIALZED";
     mapSystem();
 
-
+    P_PACKET test_get = {
+        2, REQ_TYPE::GET, 0
+    };
     //ke = new KinematicEngine(&elements, 1, &kinematic_m, &kinematic_cv);
 
     std::lock_guard<std::shared_mutex> lk(kinematic_m);
     toggle_kinematic = true;
     kinematic_cv.notify_all();
+    engineRequest(test_get);
 }
 
 std::vector<Element*> SolarSystem::loadStars() {
@@ -49,6 +53,7 @@ std::vector<Element*> SolarSystem::loadStars() {
 }
 
 std::vector<Element*> SolarSystem::loadPlanets() {
+    std::cout << "\nLOADING PLANETS...";
     FileParser parser("C:\\Users\\netagive\\Desktop\\Orbital\\planets.json");
     std::vector<Element*> planetList;
     int start = (int)elements.size();
@@ -57,10 +62,12 @@ std::vector<Element*> SolarSystem::loadPlanets() {
         iBuffer_planet.push_back(i);
         planetMap[elements[i]->obj->getName()] = elements[i]->obj->getID() - 1;
     }
+    std::cout << "\nPLANETS LOADED";
     return planetList;
 }
 
 std::vector<Element*> SolarSystem::loadMoons() {
+    std::cout << "\nLOADING MOONS...";
     FileParser parser("C:\\Users\\netagive\\Desktop\\Orbital\\moons.json");
     std::vector<Element*> moonList;
     int start = (int)elements.size();
@@ -69,13 +76,16 @@ std::vector<Element*> SolarSystem::loadMoons() {
         iBuffer_moon.push_back(i);
         moonMap[elements[i]->obj->getName()] = elements[i]->obj->getID() - 1;
     }
+    std::cout << "\nMOONS LOADED...";
     return moonList;
 }
 
 std::vector<Element*> SolarSystem::loadSattelites() {
+    std::cout << "\nLOADING SPACE OBJECTS...";
     FileParser parser("C:\\Users\\netagive\\Desktop\\Orbital\\core\\Sattelites.dat");
     std::vector<Element*> satteliteList;
     parser.parseObjects<Element, Sattelite>(&elements);
+    std::cout << "\nSPACE OBJECTS LOADED...";
     return satteliteList;// INCOMPLETE
 }
 
@@ -148,6 +158,7 @@ void SolarSystem::initializeMechanics(int index, int num, ObjectTypes type) {
 
 
 void SolarSystem::mapSystem() {
+    std::cout << "\nMAPPING SYSTEM...";
     for (int i = 0; i < elements.size(); i++) {
         Element* el = elements[i];
         Element* el_tmp = el;
@@ -163,6 +174,7 @@ void SolarSystem::mapSystem() {
             iterator++;
         }
     }
+    std::cout << "\nSYSTEM MAPPED!";
 }
 
 void SolarSystem::start() {
@@ -198,6 +210,7 @@ Element* SolarSystem::getElementFromName(ObjectTypes type, std::string name) {
 
 
 void SolarSystem::engineStart() {
+    std::cout << "\nSTARTING KINETIC ENGINE...";
     HANDLE g_hInputFile = NULL;
 
     SECURITY_ATTRIBUTES saAttr;
@@ -207,7 +220,7 @@ void SolarSystem::engineStart() {
     saAttr.lpSecurityDescriptor = NULL;
 
     // Create a pipe for the child process's STDOUT. 
-    if (!CreatePipe(&StdOUT_R, &StdOUT_R, &saAttr, 0))
+    if (!CreatePipe(&StdOUT_R, &StdOUT_W, &saAttr, 0))
         ThrowError(ERR::FATAL, TEXT("Failed to Create Pipe for Kinetic Engine STDOUT"));
 
     // Ensure the read handle to the pipe for STDOUT is not inherited.
@@ -253,12 +266,33 @@ void SolarSystem::engineStart() {
         CloseHandle(piProcInfo.hProcess);
         CloseHandle(piProcInfo.hThread);
     }
+    std::cout << "\nKINETIC ENGINE STARTED";
 }
 
 void SolarSystem::engineRequest(P_PACKET packet) {
-    DWORD dwWritten;
+    DWORD dwRead, dwWritten;
     BOOL bSuccess = FALSE;
+    P_PACKET r;
 
     bSuccess = WriteFile(StdIN_W, packet.buffer, sizeof(PACKET), &dwWritten, NULL);
     if (!bSuccess) ThrowWarn(TEXT("Kinetic Engine IPC Packet Send Failiure"));
+
+    for (;;)
+    {
+        bSuccess = ReadFile(StdOUT_R, r.buffer, sizeof(PACKET), &dwRead, NULL);
+        if (bSuccess) {
+            B_RES r_dat;
+            memcpy(&r_dat, r.p.body, sizeof(B_RES));
+            if (r.p.status == 200) {
+                std::cout << "\n\nStatus: " << r.p.status;
+                if (packet.p.type == REQ_TYPE::GET) {
+                    std::cout << "\nPosition: " << r_dat.pos << "\nVelocity: " << r_dat.vel;
+                }
+            }
+            else ThrowWarn(TEXT("Kinetic Engine Request Handle Failiure. Status Code != 200"));
+            break;
+        }
+        // Implement Timeout
+        //if (!bSuccess || dwRead == 0) ThrowWarn(TEXT("Kinetic Engine IPC Packet Send Failiure"));
+    }
 }

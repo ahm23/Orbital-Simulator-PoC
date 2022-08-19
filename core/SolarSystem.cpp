@@ -277,8 +277,6 @@ void SolarSystem::engineRequest(P_PACKET packet) {
     bSuccess = WriteFile(StdIN_W, packet.buffer, sizeof(PACKET), &dwWritten, NULL);
     if (!bSuccess) ThrowWarn(TEXT("Kinetic Engine IPC Packet Send Failiure"));
 
-    for (;;)
-    {
         bSuccess = ReadFile(StdOUT_R, r.buffer, sizeof(PACKET), &dwRead, NULL);
         if (bSuccess) {
             B_RES r_dat;
@@ -289,10 +287,14 @@ void SolarSystem::engineRequest(P_PACKET packet) {
                     std::cout << "\nPosition: " << r_dat.pos << "\nVelocity: " << r_dat.vel;
                 }
             }
-            else ThrowWarn(TEXT("Kinetic Engine Request Handle Failiure. Status Code != 200"));
-            break;
+            else {
+                if (packet.p.type == REQ_TYPE::GET)
+                    ThrowWarn(TEXT("Kinetic Engine GET Request Handle Failiure. Status Code != 200"));
+                else
+                    ThrowWarn(TEXT("Kinetic Engine GET Request Handle Failiure. Status Code != 200"));
+            }
+            //break;
         }
         // Implement Timeout
         //if (!bSuccess || dwRead == 0) ThrowWarn(TEXT("Kinetic Engine IPC Packet Send Failiure"));
-    }
 }

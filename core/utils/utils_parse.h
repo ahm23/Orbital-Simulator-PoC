@@ -158,10 +158,20 @@ public:
         init.timestamp = j[i]["init_orbit"]["timestamp"];
         switch (init.type) {
             case 0:
-                file >> init.coe.TA >> init.coe.a >> init.coe.e >> init.coe.i >> init.coe.raan >> init.coe.omega;
+                init.coe.a = j[i]["init_orbit"]["semimajor"];
+                init.coe.e = j[i]["init_orbit"]["eccentricity"];
+                init.coe.i = (double)j[i]["init_orbit"]["inclination"] * ((type_angle == "deg") ? d2r : 1);
+                init.coe.raan = (double)j[i]["init_orbit"]["raan"] * ((type_angle == "deg") ? d2r : 1);
+                init.coe.omega = (double)j[i]["init_orbit"]["argumentOfPeriapsis"] * ((type_angle == "deg") ? d2r : 1);
+                init.coe.TA = (double)j[i]["init_orbit"]["trueAnomaly"] * ((type_angle == "deg") ? d2r : 1);
                 return init;
             case 1:
-                file >> init.init_r >> init.coe.a >> init.coe.e >> init.coe.i >> init.coe.raan >> init.coe.omega;
+                init.coe.a = j[i]["init_orbit"]["semimajor"];
+                init.coe.e = j[i]["init_orbit"]["eccentricity"];
+                init.coe.i = (double)j[i]["init_orbit"]["inclination"] * (double)((type_angle == "deg") ? d2r : 1);
+                init.coe.raan = (double)j[i]["init_orbit"]["raan"] * ((type_angle == "deg") ? d2r : 1);
+                init.coe.omega = (double)j[i]["init_orbit"]["argumentOfPeriapsis"] * ((type_angle == "deg") ? d2r : 1);
+                init.init_r = j[i]["init_orbit"]["position"];
                 return init;
             case 2:
                 file >> init.init_ma >> init.coe.e >> init.coe.i >> init.coe.raan >> init.coe.omega;
@@ -169,10 +179,10 @@ public:
             case 3:
                 init.coe.a = j[i]["init_orbit"]["semimajor"];
                 init.coe.e = j[i]["init_orbit"]["eccentricity"];
-                init.coe.i = j[i]["init_orbit"]["inclination"] * (type_angle == "deg") ? d2r : 1;
-                init.coe.raan = j[i]["init_orbit"]["raan"] * (type_angle == "deg") ? d2r : 1;
-                init.coe.omega = j[i]["init_orbit"]["argumentOfPeriapsis"] * (type_angle == "deg") ? d2r : 1;
-                init.init_ml = j[i]["init_orbit"]["meanLongitude"] * (type_angle == "deg") ? d2r : 1;
+                init.coe.i = j[i]["init_orbit"]["inclination"] * ((type_angle == "deg") ? d2r : 1);
+                init.coe.raan = j[i]["init_orbit"]["raan"] * ((type_angle == "deg") ? d2r : 1);
+                init.coe.omega = j[i]["init_orbit"]["argumentOfPeriapsis"] * ((type_angle == "deg") ? d2r : 1);
+                init.init_ml = j[i]["init_orbit"]["meanLongitude"] * ((type_angle == "deg") ? d2r : 1);
                 return init;
             default:
                 return init;

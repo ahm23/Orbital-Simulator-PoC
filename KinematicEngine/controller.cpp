@@ -1,3 +1,4 @@
+#pragma once
 #include <windows.h>
 #include <stdio.h>
 #include <iostream>
@@ -12,14 +13,20 @@ int main() {
     HANDLE hStdin, hStdout;
     BOOL bSuccess;
     std::condition_variable_any cv;
-    std::mutex mut;
-    int status = 0;
+    std::shared_mutex mut;
+    std::atomic<int> status = 0;
+    std::cout << "Running." << "\n";
 
-    ENGINE* e = new ENGINE(4, &mut, &cv, &status);      // potential to create more per system
+    const int threadCount = 3;
 
-    while (!status);
-    if (status == 2)
-        cv.notify_all();
+    ENGINE* e = new ENGINE(threadCount, &mut, &cv, &status);      // potential to create more per system
+    std::cout << "Nice." << "\n";
+    while (status != threadCount);
+    e->toggle = true;
+    cv.notify_all();
+
+
+    int counter = 0;
 
 
     hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -41,6 +48,7 @@ int main() {
                 p.p.id, REQ_TYPE::RES, 200
             };
             bSuccess = WriteFile(hStdout, r.buffer, sizeof(PACKET), &dwWritten, NULL);
+            counter++;
         }
         if (p.p.type == REQ_TYPE::GET) {
             B_GET dat;

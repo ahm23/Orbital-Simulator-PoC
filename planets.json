@@ -16,7 +16,7 @@
       "raan": 48.33167,
       "argumentOfPeriapsis": 77.45645,
       "meanLongitude": 252.25084,
-      "timestamp": 1654723507000
+      "timestamp": 1660190400000
     }
   },
   {
@@ -26,17 +26,17 @@
     "avg_radius": 6378.137,
     "axial_tilt": 23.44,
     "init_orbit": {
-      "type": 3,
+      "type": 0,
       "type_angle": "deg",
       "type_anchor": 1,
       "anchor": "Sun",
-      "semimajor": 149597887.1558,
-      "eccentricity": 0.01671022,
-      "inclination": 0.00005,
-      "raan": -11.260648,
-      "argumentOfPeriapsis": 102.94719,
-      "meanLongitude": 100.46435,
-      "timestamp": 1654723507000
+      "semimajor": 149462496.31995,
+      "eccentricity": 0.017499227,
+      "inclination": 0.002550332,
+      "raan": 184.3421216932458,
+      "argumentOfPeriapsis": 280.1400037,
+      "trueAnomaly": 213.5451240085579,
+      "timestamp": 1660190400000
     }
   }
 ]

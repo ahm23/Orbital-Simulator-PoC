@@ -48,7 +48,6 @@ void ENGINE::ComputeWorker(int th_id, std::shared_mutex* m, std::condition_varia
 					//if (lead) working = 0;
 					//std::unique_lock<std::shared_mutex> lk2(mut);
 					//cv2.wait(lk2, [&] { return paused == false; });
-					//std::cout << "nice!";
 				}
 				// Disable catchup processing & transition to real-time.
 				if (sys_objects.size() > 1) {
@@ -102,9 +101,7 @@ void ENGINE::ComputeWorker(int th_id, std::shared_mutex* m, std::condition_varia
 				temp_p = el.p - sys_objects[i].p;
 				//calc_a += (calculate_mu(el.mass, sys_objects[i].mass) / pow(temp_p.norm(), 3)) * temp_p;
 				el.v += solve(temp_p, time_increment, el.time, &func_orbitAccel, std::vector<void*>{ &el, &sys_objects[i] });
-				std::cout << "bruh";
 			}
-			std::cout << el.id << " Earth Velocity" << el.v << "@ T:" << el.time+time_increment << "\n";
 			el.p = solve(temp_p, time_increment, el.time, &func_orbitVel, std::vector<void*>{});
 			//el.v += calc_a * (double)(el.time + time_increment) / 1000 - calc_a * (double)el.time / 1000;
 			//el.p += el.v * (double)(el.time + time_increment) / 1000 - el.v * (double)el.time / 1000;
@@ -135,7 +132,6 @@ void ENGINE::ComputeWorker(int th_id, std::shared_mutex* m, std::condition_varia
 		// not necessary
 		//if (!catchup)
 	}
-	std::cout << "what";
 }
 
 int ENGINE::addObject(int id, B_INIT o) {

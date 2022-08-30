@@ -1,19 +1,19 @@
 #pragma once
 #include <vector>
-
 #include "Object.h"
 #include "celestial/Star.h"
 #include "celestial/Planet.h"
 #include "Sattelite.h"
 #include "../gui/GUIPipeline.h"
-
 #include "Element.h"
-
 #include "utils/utils_parse.h"
-
 #include <shared_mutex>
-
 #include "KinematicEngine.h"
+#include <Windows.h>
+
+#include "../commons/ipc.h"
+
+
 
 
 class SolarSystem {
@@ -35,6 +35,7 @@ public:
 
 	Object* getObjectFromName(ObjectTypes type, std::string name);
 	Element* getElementFromName(ObjectTypes type, std::string name);
+	void engineStart();
 	Eigen::Vector3d getVectorBetweenObjects(Element* o1, Element* o2);
 	void mapSystem();
 
@@ -50,7 +51,13 @@ private:
 	std::vector<Element*> loadSattelites();
 
 	GUIPipeline* renderer;
-	KinematicEngine* ke;
+
+	HANDLE StdIN_R;
+	HANDLE StdIN_W;
+	HANDLE StdOUT_R;
+	HANDLE StdOUT_W;
+
+	void engineRequest(P_PACKET);
 
 	//void initializePlanetaryOrbit(int num);
 	void initializeMechanics(int, int num, ObjectTypes type);

@@ -29,8 +29,6 @@
 #include "gui/GUIPipeline.h"
 #include "gui/GUI.h"
 
-
-using namespace std;
 using namespace Eigen;
 
 

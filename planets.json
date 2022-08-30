@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Mercury",
+    "mass": 330100000000000000000000.0,
+    "grav_param": 22032.9,
+    "avg_radius": 2440.5,
+    "axial_tilt": 0.034,
+    "init_orbit": {
+      "type": 3,
+      "type_angle": "deg",
+      "type_anchor": 1,
+      "anchor": "Sun",
+      "semimajor": 57909175.67825,
+      "eccentricity": 0.20563069,
+      "inclination": 7.00487,
+      "raan": 48.33167,
+      "argumentOfPeriapsis": 77.45645,
+      "meanLongitude": 252.25084,
+      "timestamp": 1660190400000
+    }
+  },
+  {
+    "name": "Earth",
+    "mass": 5972200000000000000000000.0,
+    "grav_param": 398600.0,
+    "avg_radius": 6378.137,
+    "axial_tilt": 23.44,
+    "init_orbit": {
+      "type": 0,
+      "type_angle": "deg",
+      "type_anchor": 1,
+      "anchor": "Sun",
+      "semimajor": 149462496.31995,
+      "eccentricity": 0.017499227,
+      "inclination": 0.002550332,
+      "raan": 184.3421216932458,
+      "argumentOfPeriapsis": 280.1400037,
+      "trueAnomaly": 213.5451240085579,
+      "timestamp": 1660190400000
+    }
+  }
+]

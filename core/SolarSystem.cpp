@@ -5,7 +5,7 @@
 
 long SolarSystem::update_freq = 1000;
 
-SolarSystem::SolarSystem(GUIPipeline* renderer) : renderer{ renderer } {
+SolarSystem::SolarSystem() {
 
 	loadStars();
     loadPlanets();

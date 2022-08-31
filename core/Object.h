@@ -19,7 +19,7 @@ enum ObjectTypes {
 	SATTELITE = 6
 };
 
-static const char* filenames[] = { "Stars.dat", "Planets.dat", "Moons.dat" };
+static const char* filenames[] = { "stars.json", "planets.json", "moons.json" };
 
 struct VRAM_DAT {
 	std::vector<float> data;
@@ -28,10 +28,11 @@ struct VRAM_DAT {
 
 struct ObjectConfig {
 	int id;
-	std::string name = "N/A";
+	std::string name;
+	std::string name_display = "N/A";
 	ObjectTypes type;
-	double mass = 0;
-	double mu = 0;
+	double mass;
+	double mu;
 	VRAM_DAT gpu_mesh;
 };
 
@@ -43,13 +44,13 @@ public:
 
 	Orbit orbit;
 	//Kinematic kinematics;
-	
+
 	Object(ObjectConfig config);
 	~Object();
 
 	std::string getName() { return config_obj.name; }
 	double getMass() { return config_obj.mass; }
-	ObjectTypes getType() { return config_obj.type;  }
+	ObjectTypes getType() { return config_obj.type; }
 	int getID() { return config_obj.id; }
 
 	void setMu(double mu) {
@@ -72,7 +73,7 @@ protected:
 	Eigen::Vector3d p;
 	Eigen::Vector3d v;
 	Eigen::Vector3d a;
-	
+
 	Eigen::Matrix3d ROTATION;
 
 	ObjectConfig config_obj;
@@ -80,4 +81,3 @@ protected:
 
 	//void kinematicProcess();
 };
-

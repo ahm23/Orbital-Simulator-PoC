@@ -31,7 +31,7 @@ public:
 
 	std::vector<Element*> elements;
 
-	SolarSystem(GUIPipeline* renderer);
+	SolarSystem();
 
 	Object* getObjectFromName(ObjectTypes type, std::string name);
 	Element* getElementFromName(ObjectTypes type, std::string name);
@@ -49,8 +49,6 @@ private:
 	std::vector<Element*> loadPlanets();
 	std::vector<Element*> loadMoons();
 	std::vector<Element*> loadSattelites();
-
-	GUIPipeline* renderer;
 
 	HANDLE StdIN_R;
 	HANDLE StdIN_W;

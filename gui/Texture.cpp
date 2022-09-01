@@ -1,5 +1,4 @@
 #include "Texture.h"
-#include <GL/glew.h>
 #include "stb_image.h"
 #include "utils_debug.h"
 
@@ -30,13 +29,13 @@ Texture::~Texture()
 	GL(glDeleteTextures(1, &id));
 }
 
-void Texture::Bind(unsigned int slot) const
+void Texture::Bind(unsigned int slot)
 {
 	GL(glActiveTexture(GL_TEXTURE0 + slot));
 	GL(glBindTexture(GL_TEXTURE_2D, id));
 }
 
-void Texture::Unbind() const
+void Texture::Unbind()
 {
 	GL(glBindTexture(GL_TEXTURE_2D, 0));
 }

@@ -1,7 +1,19 @@
 #include "GUI.h"
 
-GUI::GUI(GLFWwindow* w) : window(w)
-{
+GUI::GUI() {
+
+	icons[0].pixels = stbi_load("./earth.png", &icons[0].width, &icons[0].height, 0, 4);
+
+	glfwSetWindowIcon(window, 1, icons);
+	glfwMakeContextCurrent(window);
+
+	glewExperimental = true;
+	if (glewInit() != GLEW_OK) {
+		std::cout << "ERROR!";
+		std::cout << glewInit();
+		getchar();
+		return;
+	}
 
 	// Ensure we can capture the escape key being pressed below
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
@@ -21,10 +33,20 @@ GUI::GUI(GLFWwindow* w) : window(w)
 	//GL(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 	GL(glDepthFunc(GL_LESS));
 	GL(glEnable(GL_CULL_FACE));
+
+	shader = new Shader("gui/shaders/vertex.shader", "gui/shaders/fragment.shader");
+	shader->bind();
+
+	texture = new Texture("gui/highres.jpg");
+
+	glm::vec3 lightPos = glm::vec3(-4, -6, 0);
+	shader->SetUniform3f("LightPosition_worldspace", lightPos.x, lightPos.y, lightPos.z);
+	shader->SetUniform1i("myTextureSampler", 0);
+
+
 }
 
-GLFWwindow* GUI::createWindow()
-{
+GLFWwindow* GUI::createWindow() {
 	glfwWindowHint(GLFW_SAMPLES, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -35,41 +57,53 @@ GLFWwindow* GUI::createWindow()
 	return glfwCreateWindow(1024, 768, "A M OGU S", NULL, NULL);
 }
 
-
 bool GUI::render() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	shader->bind();
 
 	GLint val = GL_FALSE;
-	glGetShaderiv(1, GL_COMPILE_STATUS, &val);
+	GL(glGetShaderiv(3, GL_COMPILE_STATUS, &val));
 	if (!val)
 	{
-		std::cout << "Bruh, shader failed";
+		std::cout << "Bruh, shader failed\n\n";
 	}
 
-
-	shader.bind();
-
+	// TODO: Support multi-VAO rendering.
 	computeMatrices(window);
 	glm::mat4 ModelMatrix = glm::mat4(1.0);
 	glm::mat4 MVP = ProjectionMatrix * ViewMatrix * ModelMatrix;
 
-	shader.SetUniformMat4f("MVP", MVP);
-	shader.SetUniformMat4f("V", ViewMatrix);
-	shader.SetUniformMat4f("M", ModelMatrix);
+	shader->SetUniformMat4f("MVP", MVP);
+	shader->SetUniformMat4f("V", ViewMatrix);
+	shader->SetUniformMat4f("M", ModelMatrix);
 
 	GL(glDrawElements(
 		GL_TRIANGLES,      // mode
-		ib.GetCount(),    // count
+		pipe.getVAOIndexCount(1),    // count
 		GL_UNSIGNED_INT,   // type
 		(void*)0           // element array buffer offset
 	));
 
-	shader.unbind();
+	shader->unbind();
 
 	GL(glfwSwapBuffers(window));
 	GL(glfwPollEvents());
 	return true;
+}
+
+void GUI::testFunc()
+{
+	SphereRender sphere = SphereRender(1, 100,90);
+	texture->Bind();
+
+	pipe.createVBuffers(1, sphere.getBufferDataSize());
+	pipe.createVAO({1}, sphere.getIndexSize());
+
+	pipe.updateVertexBuffer(1, sphere.getBufferData(), sphere.getBufferDataCount());
+	pipe.updateIndexBuffer(1, sphere.getIndices(), sphere.getIndexSize());
+
+	pipe.bindVArray(1);
 }
 
 void GUI::computeMatrices(GLFWwindow* window) {

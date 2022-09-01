@@ -4,7 +4,6 @@
 #include "celestial/Star.h"
 #include "celestial/Planet.h"
 #include "Sattelite.h"
-#include "../gui/GUIPipeline.h"
 #include "Element.h"
 #include "utils/utils_parse.h"
 #include <shared_mutex>

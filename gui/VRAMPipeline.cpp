@@ -8,8 +8,18 @@ VRAMPipeline::VRAMPipeline() {
 
 }
 
+bool VRAMPipeline::bindVBuffer(unsigned int id) {
+    GL(glBindBuffer(GL_ARRAY_BUFFER, id));
+    return true;
+};
+
+bool VRAMPipeline::bindIBuffer(unsigned int id) {
+    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, id));
+    return true;
+};
+
 bool VRAMPipeline::bindVArray(unsigned int id) {
-    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicies[id]));
+    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicies[id].id));
     return GL(glBindVertexArray(id));
 }
 
@@ -30,35 +40,52 @@ void VRAMPipeline::addVABuffer(int buf_id) {
     return;
 }
 
-bool VRAMPipeline::createVBuffers(int count /*Add vector of sizes as 2nd param?*/) {
-    bid.push_back(0);
-    bool success = GL(glGenBuffers(count, &bid.back()));
-    for (int b = 0; b < count; b++) {
-        bindVBuffer(b);
-        GL(glBufferData(GL_ARRAY_BUFFER, buffer_form.GetStride() * 1024, nullptr, GL_DYNAMIC_DRAW));
-    }
-    return success;
-}
 
 bool VRAMPipeline::deleteVBuffers(int count) {
     //return GL(glGenBuffers(count, &bid));               /// FIX
     return false;
 }
 
-bool VRAMPipeline::createVAO(int count, std::vector<unsigned int> bids) {
+bool VRAMPipeline::createVAO(std::vector<unsigned int> bids, unsigned int i_count, unsigned int* indexBuffer) {
     vao.push_back(0);
     GL(glGenVertexArrays(1, &vao.back()));
     unsigned int vaoID = vao.back();
     GL(glBindVertexArray(vaoID));
     for (int b : bids)
         addVABuffer(b);
-    indicies.insert(vao.back(), (unsigned)0);
-    GL(glGenBuffers(1, &indicies[vaoID]));
-    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicies[vaoID]));
-    GL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(GLuint), nullptr, GL_DYNAMIC_DRAW));
+
+    indicies.insert(std::make_pair(vao.back(), indexStorage { (unsigned)0, i_count, indexBuffer }));
+    GL(glGenBuffers(1, &indicies[vaoID].id));
+    GL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicies[vaoID].id));
+    GL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, i_count * sizeof(GLuint), nullptr, GL_DYNAMIC_DRAW));
     return true;
 }
 
-bool VRAMPipeline::updateBufferData(int, const void*) {
-    return false;
+bool VRAMPipeline::updateVertexBuffer(unsigned int id, const void* data, unsigned int count) {
+    bindVBuffer(id);
+    GL(glBufferSubData(GL_ARRAY_BUFFER, 0, buffer_form.GetStride() * count, data ));
+    unbindVBuffer();
+    return true;
+}
+
+bool VRAMPipeline::updateIndexBuffer(unsigned int vao_id, const unsigned int* data, unsigned int size) {
+    bindIBuffer(indicies[vao_id].id);
+    GL(glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, size, data));
+    unbindIBuffer();
+    return true;
+}
+
+
+
+// Need to return buffer id, also just make it for 1 buffer. this is stupid.
+bool VRAMPipeline::createVBuffers(int b_count, int v_count) {
+    bid.push_back(0);
+    bool success = GL(glGenBuffers(b_count, &bid.back()));
+    const unsigned int start = (bid.size() - 1 > 1) ? bid.size() - 1 : 1;   // If size 0 then there's a problem. Handle this error.
+    for (unsigned int b = start; b < start + b_count; b++) {
+        bindVBuffer(b);
+        GL(glBufferData(GL_ARRAY_BUFFER, buffer_form.GetStride() * v_count, nullptr, GL_DYNAMIC_DRAW));
+        b_size.insert(std::pair(b, v_count));
+    }
+    return success;
 }

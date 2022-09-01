@@ -11,19 +11,24 @@
 #include "Texture.h"
 #include "IndexBuffer.h"
 #include "SphereRender.h"
+#include "stb_image.h"
+#include "VRAMPipeline.h"
 
-struct VRAM_DAT {
+struct VRAM_DATA {
 	std::vector<float> data;
 	std::vector<unsigned int> indicies;
 };
 
 class GUI {
 public:
-	GUI(GLFWwindow*);
+	GUI();
+
+
+	void testFunc();
 
 	bool render();
 
-	GLFWwindow* window;
+	GLFWwindow* window = createWindow();
 
 private:
 
@@ -45,15 +50,26 @@ private:
 	glm::mat4 ViewMatrix;
 	glm::mat4 ProjectionMatrix;
 
+	glm::mat4 getViewMatrix() {
+		return ViewMatrix;
+	}
+	glm::mat4 getProjectionMatrix() {
+		return ProjectionMatrix;
+	}
+
+
+
 	GLFWwindow* createWindow();
 
-	void swapBuffers(VRAM_DAT);			// TODO
+	void swapBuffers(VRAM_DATA);			// TODO
 	
+	GLFWimage icons[1];
 
-	Shader shader = Shader("shaders/vertex.shader", "shaders/fragment.shader");
-	Texture texture = Texture("highres.jpg");
-	SphereRender sphere = SphereRender(1, 100, 100);
-	IndexBuffer ib = IndexBuffer(sphere.getIndices(), sphere.getIndexCount());
+	VRAMPipeline pipe = VRAMPipeline();
+
+	Shader* shader;
+	Texture* texture;
+
 
 	void computeMatrices(GLFWwindow*);
 };

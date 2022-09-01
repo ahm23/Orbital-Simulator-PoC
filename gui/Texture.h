@@ -1,14 +1,17 @@
 #pragma once
 #include <iostream>
+#include <GL/glew.h>
 
 class Texture
 {
 public:
+	Texture() = default;
+
 	Texture(const std::string &path);
 	~Texture();
 
-	void Bind(unsigned int slot = 0) const;
-	void Unbind() const;
+	void Bind(unsigned int slot = 0);
+	void Unbind();
 
 private:
 	unsigned int id;

@@ -65,11 +65,12 @@ unsigned int Shader::CompileShader(unsigned int type, const std::string& source)
 {
     unsigned int id = glCreateShader(type);
     const char* src = source.c_str();
-    GL(glShaderSource(id, 1, &src, nullptr));
+    GL(glShaderSource(id, 1, &src, NULL));
     GL(glCompileShader(id));
 
     int result;
-    GL(glGetShaderiv(id, GL_COMPILE_STATUS, &result));
+    glGetShaderiv(id, GL_COMPILE_STATUS, &result);
+    std::cout << result << "\n";
     if (!result) {
         int len;
         GL(glGetShaderiv(id, GL_COMPILE_STATUS, &len));
@@ -96,6 +97,10 @@ unsigned int Shader::CreateShader(const std::string& vertexShader, const std::st
     GL(glDeleteShader(vs));
     GL(glDeleteShader(fs));
     glUseProgram(program);
+
+    GLint result = GL_FALSE;
+    GL(glGetShaderiv(3, GL_COMPILE_STATUS, &result));
+    std::cout << result << "\n";
 
     return program;
 }

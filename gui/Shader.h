@@ -12,6 +12,8 @@ public:
 	std::string fn_fragment;
 	std::unordered_map<std::string, int> locationCache;
 
+	Shader() = default;
+
 	Shader(const std::string& filename_vertex, const std::string& filename_fragment);
 	~Shader();
 

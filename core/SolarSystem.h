@@ -7,7 +7,6 @@
 #include "Element.h"
 #include "utils/utils_parse.h"
 #include <shared_mutex>
-#include "KinematicEngine.h"
 #include <Windows.h>
 
 #include "../commons/ipc.h"
@@ -48,9 +47,7 @@ private:
 	std::vector<Element*> loadPlanets();
 	std::vector<Element*> loadMoons();
 	std::vector<Element*> loadSattelites();
-	
-	// Kinematic Engine Process Vars
-	KinematicEngine* ke;
+
 	HANDLE StdIN_R;
 	HANDLE StdIN_W;
 	HANDLE StdOUT_R;

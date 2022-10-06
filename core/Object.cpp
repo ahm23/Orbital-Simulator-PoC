@@ -2,7 +2,6 @@
 
 Object::Object(ObjectConfig config_obj) {
 	this->config_obj = config_obj;
-
 }
 
 Object::~Object() {

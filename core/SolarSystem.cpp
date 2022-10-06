@@ -5,7 +5,6 @@
 
 long SolarSystem::update_freq = 1000;
 
-
 SolarSystem::SolarSystem() {
 
 	loadStars();
